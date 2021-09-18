@@ -11,24 +11,75 @@ package io.github.halo.pay.api;
  */
 public interface PayApi extends Capacity {
 
-
     /**
-     * 下载对账单
+     * 统一下单接口
      *
-     * @param billType   账单类型
-     * @param billDate   账单日期 yyyy-MM-dd
-     * @param merchantId 商户号
      * @return
      * @throws Exception
      */
-    Object downloadBill(String billType, String billDate, String merchantId) throws Exception;
+    <T> T pay(PayParam<T> payParam) throws Exception;
+
+    /**
+     * 统一查询订单接口
+     *
+     * @param queryParam
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    <T> T query(QueryParam<T> queryParam) throws Exception;
+
+
+    /**
+     * 统一退款接口
+     *
+     * @param refundParam
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+
+    <T> T refund(RefundParam<T> refundParam) throws Exception;
+
+
+    /**
+     * 退款查询接口
+     *
+     * @param outTradeNo
+     * @return
+     * @throws Exception
+     */
+    Object refundQuery(String outTradeNo) throws Exception;
+
+
+    /**
+     * 统一关闭订单接口
+     *
+     * @param outTradeNo
+     * @return
+     * @throws Exception
+     */
+    Object close(String outTradeNo) throws Exception;
+
 
     /**
      * 统一撤销订单接口
      *
-     * @param outTradeNo
+     * @param
      * @return
      */
-    PayApiResp cancel(String outTradeNo) throws Exception;
+    <T> T cancel(CancelParam<T> cancelParam) throws Exception;
+
+
+    /**
+     * 下载对账单
+     *
+     * @param billType 账单类型
+     * @param billDate 账单日期 yyyy-MM-dd
+     * @return
+     * @throws Exception
+     */
+    Object downloadBill(String billDate, String billType) throws Exception;
+
 
 }

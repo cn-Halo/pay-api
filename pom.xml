@@ -10,8 +10,31 @@
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
-	<dependencies>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.sshapp</groupId>
+			<artifactId>wxpay-sdk</artifactId>
+			<version>3.0.9.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alipay.sdk</groupId>
+			<artifactId>alipay-sdk-java</artifactId>
+			<version>3.4.49.ALL</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.32</version>
+		</dependency>
 	</dependencies>
 
 	<build>
