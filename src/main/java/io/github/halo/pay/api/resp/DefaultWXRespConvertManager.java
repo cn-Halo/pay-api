@@ -29,4 +29,14 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
             }
         };
     }
+
+    @Override
+    public WXRespConvert orderQueryRespConvert() {
+        return new WXRespConvert<T>() {
+            @Override
+            public T convert(Map resp) {
+                return null;
+            }
+        };
+    }
 }

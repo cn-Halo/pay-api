@@ -4,6 +4,7 @@ import com.github.wxpay.sdk.WXPay;
 import io.github.halo.pay.api.param.*;
 import io.github.halo.pay.api.resp.WXRespConvertManager;
 import io.github.halo.pay.api.wrap.FacePayParamWrapper;
+import io.github.halo.pay.api.wrap.OrderQueryParamWrapper;
 import io.github.halo.pay.api.wrap.UnifiedOrderParamWrapper;
 import io.github.halo.pay.api.wrap.WXParamWrapperManager;
 import lombok.extern.slf4j.Slf4j;
@@ -47,8 +48,9 @@ public class WXPayApiImpl extends AbstractWXPayApi {
 
     @Override
     public <T> T query(OrderQueryParam<T> orderQueryParam) throws Exception {
-
-        return super.query0();
+        OrderQueryParamWrapper queryParamWrapper = wxParamWrapperManager.orderQueryParamWrapper(orderQueryParam);
+        Map<String, String> resp = (Map<String, String>) super.query0(queryParamWrapper);
+        return (T) wxRespConvertManager.orderQueryRespConvert().convert(resp);
     }
 
     @Override

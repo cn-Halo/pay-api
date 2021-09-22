@@ -3,11 +3,14 @@ package io.github.halo.pay.api.impl;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.AlipayResponse;
 import com.alipay.api.request.AlipayTradePayRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradePayResponse;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AlipayTradeWapPayResponse;
 import io.github.halo.pay.api.AliPayApi;
 import io.github.halo.pay.api.wrap.FacePayParamWrapper;
+import io.github.halo.pay.api.wrap.OrderQueryParamWrapper;
 import io.github.halo.pay.api.wrap.WapPayParamWrapper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,4 +78,12 @@ public abstract class AbstractAliPayApi implements AliPayApi {
     }
 
 
+    @Override
+    public <T extends AlipayResponse, R extends String> T query0(OrderQueryParamWrapper<T, R> queryParam) throws Exception {
+        String bizContentStr = queryParam.wrap();
+        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+        request.setBizContent(bizContentStr);
+        AlipayTradeQueryResponse response = alipayClient.execute(request);
+        return (T) response;
+    }
 }

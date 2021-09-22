@@ -2,6 +2,7 @@ package io.github.halo.pay.api.wrap;
 
 import io.github.halo.pay.api.param.FacePayParam;
 import io.github.halo.pay.api.param.OrderQueryParam;
+import io.github.halo.pay.api.param.RefundParam;
 import io.github.halo.pay.api.param.WapPayParam;
 
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
                 da.put("total_fee", payParam.totalAmount());
 //                da.put("spbill_create_ip", payParam/);
                 da.put("auth_code", payParam.authCode());
-                da.put("time_expire", payParam.timeExpire());
+//                da.put("time_expire", payParam.timeExpire());
                 return da;
             }
         };
@@ -56,7 +57,7 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
     }
 
     @Override
-    public OrderQueryParamWrapper facePayParamWrapper(OrderQueryParam payParam) {
+    public OrderQueryParamWrapper orderQueryParamWrapper(OrderQueryParam payParam) {
         OrderQueryParamWrapper orderQueryParamWrapper = new OrderQueryParamWrapper<Object, Map<String, String>>() {
             @Override
             public Map wrap() {
@@ -67,5 +68,22 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
             }
         };
         return orderQueryParamWrapper;
+    }
+
+    @Override
+    public RefundParamWrapper refundParamWrapper(RefundParam refundParam) {
+        RefundParamWrapper refundParamWrapper = new RefundParamWrapper<Object, Map<String, String>>() {
+            @Override
+            public Map wrap() {
+                Map<String, String> da = new HashMap<>();
+                da.put("out_trade_no", refundParam.outTradeNo());
+                da.put("out_refund_no", refundParam.outRefundNo());
+//                da.put("total_fee", refundParam.refundAmount());
+                da.put("refund_fee", refundParam.refundAmount());
+                da.put("reason", refundParam.refundReason());
+                return da;
+            }
+        };
+        return refundParamWrapper;
     }
 }

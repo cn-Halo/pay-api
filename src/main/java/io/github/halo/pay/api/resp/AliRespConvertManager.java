@@ -8,8 +8,9 @@ package io.github.halo.pay.api.resp;
 public interface AliRespConvertManager<T> extends RespConvertManager {
 
     AliRespConvert wapPayRespConvert();
-    
+
     AliRespConvert facePayRespConvert();
 
+    AliRespConvert orderQueryRespConvert();
 
 }

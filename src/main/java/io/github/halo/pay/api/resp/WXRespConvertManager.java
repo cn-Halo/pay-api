@@ -12,5 +12,7 @@ public interface WXRespConvertManager<T> extends RespConvertManager {
 
     WXRespConvert facePayRespConvert();
 
+    WXRespConvert orderQueryRespConvert();
+
 
 }

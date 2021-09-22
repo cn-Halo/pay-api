@@ -28,4 +28,14 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
             }
         };
     }
+
+    @Override
+    public AliRespConvert orderQueryRespConvert() {
+        return new AliRespConvert<T>() {
+            @Override
+            public T convert(AlipayResponse resp) {
+                return null;
+            }
+        };
+    }
 }

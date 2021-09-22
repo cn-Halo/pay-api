@@ -2,6 +2,7 @@ package io.github.halo.pay.api;
 
 import com.alipay.api.AlipayResponse;
 import io.github.halo.pay.api.wrap.FacePayParamWrapper;
+import io.github.halo.pay.api.wrap.OrderQueryParamWrapper;
 import io.github.halo.pay.api.wrap.WapPayParamWrapper;
 
 /**
@@ -23,7 +24,6 @@ public interface AliPayApi extends PayApi {
      */
     <T extends AlipayResponse, R extends String> T wapPay0(WapPayParamWrapper<T, R> paramWrapper) throws Exception;
 
-
     /**
      * 付款码支付
      *
@@ -35,5 +35,16 @@ public interface AliPayApi extends PayApi {
      */
     <T extends AlipayResponse, R extends String> T facePay0(FacePayParamWrapper<T, R> paramWrapper) throws Exception;
 
+
+    /**
+     * 订单查询接口
+     *
+     * @param queryParam
+     * @param <T>
+     * @param <R>
+     * @return
+     * @throws Exception
+     */
+    <T extends AlipayResponse, R extends String> T query0(OrderQueryParamWrapper<T, R> queryParam) throws Exception;
 
 }

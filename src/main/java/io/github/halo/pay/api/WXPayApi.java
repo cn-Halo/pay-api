@@ -49,6 +49,15 @@ public interface WXPayApi extends PayApi {
     <T, R extends Map> T unifiedOrder(UnifiedOrderParamWrapper<T, R> paramWrapper) throws Exception;
 
 
+    /**
+     * 订单查询接口
+     *
+     * @param queryParam
+     * @param <T>
+     * @param <R>
+     * @return
+     * @throws Exception
+     */
     <T, R extends Map> T query0(OrderQueryParamWrapper<T, R> queryParam) throws Exception;
 
 }

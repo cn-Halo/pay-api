@@ -5,7 +5,7 @@ package io.github.halo.pay.api.param;
  *
  * @author yzm
  */
-public interface FacePayParam<T>  extends InParam{
+public interface FacePayParam<T> extends InParam {
 
     String outTradeNo();
 
@@ -17,8 +17,7 @@ public interface FacePayParam<T>  extends InParam{
 
     String authCode();
 
-    String timeExpire();
-
+//    String timeExpire();//支付宝中的timeout_express 而微信中是time_expire
 
 
 }

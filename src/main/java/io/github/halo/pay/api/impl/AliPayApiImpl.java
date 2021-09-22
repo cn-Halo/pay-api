@@ -4,21 +4,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayDataDataserviceBillDownloadurlQueryRequest;
 import com.alipay.api.request.AlipayTradeCancelRequest;
-import com.alipay.api.response.AlipayDataDataserviceBillDownloadurlQueryResponse;
-import com.alipay.api.response.AlipayTradeCancelResponse;
-import com.alipay.api.response.AlipayTradeWapPayResponse;
+import com.alipay.api.response.*;
 import io.github.halo.pay.api.param.*;
 import io.github.halo.pay.api.resp.AliRespConvertManager;
 import io.github.halo.pay.api.wrap.AliParamWrapperManager;
+import io.github.halo.pay.api.wrap.FacePayParamWrapper;
+import io.github.halo.pay.api.wrap.OrderQueryParamWrapper;
 import io.github.halo.pay.api.wrap.WapPayParamWrapper;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created on 2021/6/8.
  *
  * @author yzm
  */
-@Slf4j
 public class AliPayApiImpl extends AbstractAliPayApi {
 
     private AliParamWrapperManager aliParamWrapperManager;
@@ -31,8 +29,10 @@ public class AliPayApiImpl extends AbstractAliPayApi {
     }
 
     @Override
-    public <T> T facePay(FacePayParam<T> payParam) throws Exception {
-        return null;
+    public <T> T facePay(FacePayParam<T> facePayParam) throws Exception {
+        FacePayParamWrapper facePayParamWrapper = aliParamWrapperManager.facePayParamWrapper(facePayParam);
+        AlipayTradePayResponse response = (AlipayTradePayResponse) super.facePay0(facePayParamWrapper);
+        return (T) aliRespConvertManager.facePayRespConvert().convert(response);
     }
 
     @Override
@@ -42,7 +42,9 @@ public class AliPayApiImpl extends AbstractAliPayApi {
 
     @Override
     public <T> T query(OrderQueryParam<T> orderQueryParam) throws Exception {
-        return null;
+        OrderQueryParamWrapper orderQueryParamWrapper = aliParamWrapperManager.orderQueryParamWrapper(orderQueryParam);
+        AlipayTradeQueryResponse alipayTradeWapPayResponse = (AlipayTradeQueryResponse) super.query0(orderQueryParamWrapper);
+        return (T) aliRespConvertManager.orderQueryRespConvert().convert(alipayTradeWapPayResponse);
     }
 
     @Override
