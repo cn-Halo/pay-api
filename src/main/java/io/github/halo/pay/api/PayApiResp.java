@@ -11,16 +11,31 @@ public interface PayApiResp<T> {
 
     String FAIL_CODE = "FAIL";
 
-    //请求响应码
+    //网络请求响应码
     PayApiResp code(String code);
 
     PayApiResp msg(String msg);
 
-    //业务响应码
+    //业务请求响应码
     PayApiResp subCode(String subCode);
 
     PayApiResp subMsg(String subMsg);
 
-    PayApiResp attachment(T attachment);
+    PayApiResp data(T data);
+
+    PayApiResp attachment(Object attachment);
+
+
+    String code();
+
+    String msg();
+
+    String subCode();
+
+    String subMsg();
+
+    T data();
+
+    Object attachment();
 
 }

@@ -1,10 +1,7 @@
 package io.github.halo.pay.api.wrap;
 
 import com.alibaba.fastjson.JSONObject;
-import io.github.halo.pay.api.param.FacePayParam;
-import io.github.halo.pay.api.param.OrderQueryParam;
-import io.github.halo.pay.api.param.RefundParam;
-import io.github.halo.pay.api.param.WapPayParam;
+import io.github.halo.pay.api.param.*;
 
 /**
  * Created on 2021/9/22.
@@ -84,5 +81,60 @@ public class DefaultAliParamWrapperManager implements AliParamWrapperManager {
             }
         };
         return refundParamWrapper;
+    }
+
+    @Override
+    public RefundQueryParamWrapper refundQueryParamWrapper(RefundQueryParam refundQueryParam) {
+        RefundQueryParamWrapper refundQueryParamWrapper = new RefundQueryParamWrapper<Object, String>() {
+            @Override
+            public String wrap() {
+                JSONObject bizContent = new JSONObject();
+                bizContent.put("out_trade_no", refundQueryParam.outTradeNo());
+                bizContent.put("out_request_no", refundQueryParam.outRefundNo());
+                return bizContent.toString();
+            }
+        };
+        return refundQueryParamWrapper;
+    }
+
+    @Override
+    public CloseParamWrapper closeParamWrapper(CloseParam closeParam) {
+        CloseParamWrapper closeParamWrapper = new CloseParamWrapper<Object, String>() {
+            @Override
+            public String wrap() {
+                JSONObject bizContent = new JSONObject();
+                bizContent.put("out_trade_no", closeParam.outTradeNo());
+                return bizContent.toString();
+            }
+        };
+        return closeParamWrapper;
+
+    }
+
+    @Override
+    public CancelParamWrapper cancelParamWrapper(CancelParam cancelParam) {
+        CancelParamWrapper cancelParamWrapper = new CancelParamWrapper<Object, String>() {
+            @Override
+            public String wrap() {
+                JSONObject bizContent = new JSONObject();
+                bizContent.put("out_trade_no", cancelParam.outTradeNo());
+                return bizContent.toString();
+            }
+        };
+        return cancelParamWrapper;
+    }
+
+    @Override
+    public DownloadBillParamWrapper downloadBillParamWrapper(DownloadBillParam downloadBillParam) {
+        DownloadBillParamWrapper downloadBillParamWrapper = new DownloadBillParamWrapper<Object, String>() {
+            @Override
+            public String wrap() {
+                JSONObject bizContent = new JSONObject();
+                bizContent.put("bill_type", downloadBillParam.billType());
+                bizContent.put("bill_date", downloadBillParam.billDate());
+                return bizContent.toString();
+            }
+        };
+        return downloadBillParamWrapper;
     }
 }

@@ -2,24 +2,16 @@ package io.github.halo.pay.api.impl;
 
 import com.alipay.api.AlipayClient;
 import com.alipay.api.AlipayResponse;
-import com.alipay.api.request.AlipayTradePayRequest;
-import com.alipay.api.request.AlipayTradeQueryRequest;
-import com.alipay.api.request.AlipayTradeWapPayRequest;
-import com.alipay.api.response.AlipayTradePayResponse;
-import com.alipay.api.response.AlipayTradeQueryResponse;
-import com.alipay.api.response.AlipayTradeWapPayResponse;
+import com.alipay.api.request.*;
+import com.alipay.api.response.*;
 import io.github.halo.pay.api.AliPayApi;
-import io.github.halo.pay.api.wrap.FacePayParamWrapper;
-import io.github.halo.pay.api.wrap.OrderQueryParamWrapper;
-import io.github.halo.pay.api.wrap.WapPayParamWrapper;
-import lombok.extern.slf4j.Slf4j;
+import io.github.halo.pay.api.wrap.*;
 
 /**
  * Created on 2021/6/8.
  *
  * @author yzm
  */
-@Slf4j
 public abstract class AbstractAliPayApi implements AliPayApi {
 
 //    Logger log = Logger.getLogger(AliPayApi.class.getName());
@@ -84,6 +76,53 @@ public abstract class AbstractAliPayApi implements AliPayApi {
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
         request.setBizContent(bizContentStr);
         AlipayTradeQueryResponse response = alipayClient.execute(request);
+        return (T) response;
+    }
+
+
+    @Override
+    public <T extends AlipayResponse, R extends String> T refund0(RefundParamWrapper<T, R> paramWrapper) throws Exception {
+        String bizContentStr = paramWrapper.wrap();
+        AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+        request.setBizContent(bizContentStr);
+        AlipayTradeRefundResponse response = alipayClient.execute(request);
+        return (T) response;
+    }
+
+
+    @Override
+    public <T extends AlipayResponse, R extends String> T refundQuery0(RefundQueryParamWrapper<T, R> paramWrapper) throws Exception {
+        String bizContentStr = paramWrapper.wrap();
+        AlipayTradeFastpayRefundQueryRequest request = new AlipayTradeFastpayRefundQueryRequest();
+        request.setBizContent(bizContentStr);
+        AlipayTradeFastpayRefundQueryResponse response = alipayClient.execute(request);
+        return (T) response;
+    }
+
+    @Override
+    public <T extends AlipayResponse, R extends String> T cancel0(CancelParamWrapper<T, R> paramWrapper) throws Exception {
+        String bizContentStr = paramWrapper.wrap();
+        AlipayTradeCancelRequest request = new AlipayTradeCancelRequest();
+        request.setBizContent(bizContentStr);
+        AlipayTradeCancelResponse response = alipayClient.execute(request);
+        return (T) response;
+    }
+
+    @Override
+    public <T extends AlipayResponse, R extends String> T close0(CloseParamWrapper<T, R> paramWrapper) throws Exception {
+        String bizContentStr = paramWrapper.wrap();
+        AlipayTradeCloseRequest request = new AlipayTradeCloseRequest();
+        request.setBizContent(bizContentStr);
+        AlipayTradeCloseResponse response = alipayClient.execute(request);
+        return (T) response;
+    }
+
+    @Override
+    public <T extends AlipayResponse, R extends String> T downloadBillUrl0(DownloadBillParamWrapper<T, R> paramWrapper) throws Exception {
+        String bizContentStr = paramWrapper.wrap();
+        AlipayDataDataserviceBillDownloadurlQueryRequest request = new AlipayDataDataserviceBillDownloadurlQueryRequest();
+        request.setBizContent(bizContentStr);
+        AlipayDataDataserviceBillDownloadurlQueryResponse response = alipayClient.execute(request);
         return (T) response;
     }
 }

@@ -1,8 +1,5 @@
 package io.github.halo.pay.api.wrap;
 
-import io.github.halo.pay.api.param.FacePayParam;
-import io.github.halo.pay.api.param.OrderQueryParam;
-import io.github.halo.pay.api.param.RefundParam;
 import io.github.halo.pay.api.param.WapPayParam;
 
 /**
@@ -13,11 +10,5 @@ import io.github.halo.pay.api.param.WapPayParam;
 public interface WXParamWrapperManager extends ParamWrapperManager {
 
     UnifiedOrderParamWrapper unifiedOrderParamWrapper(WapPayParam wapPayParam);
-
-    FacePayParamWrapper facePayParamWrapper(FacePayParam payParam);
-
-    OrderQueryParamWrapper orderQueryParamWrapper(OrderQueryParam payParam);
-
-    RefundParamWrapper refundParamWrapper(RefundParam refundParam);
 
 }

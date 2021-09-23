@@ -1,8 +1,6 @@
 package io.github.halo.pay.api;
 
-import io.github.halo.pay.api.wrap.FacePayParamWrapper;
-import io.github.halo.pay.api.wrap.OrderQueryParamWrapper;
-import io.github.halo.pay.api.wrap.UnifiedOrderParamWrapper;
+import io.github.halo.pay.api.wrap.*;
 
 import java.util.Map;
 
@@ -52,12 +50,69 @@ public interface WXPayApi extends PayApi {
     /**
      * 订单查询接口
      *
-     * @param queryParam
+     * @param paramWrapper
      * @param <T>
      * @param <R>
      * @return
      * @throws Exception
      */
-    <T, R extends Map> T query0(OrderQueryParamWrapper<T, R> queryParam) throws Exception;
+    <T, R extends Map> T query0(OrderQueryParamWrapper<T, R> paramWrapper) throws Exception;
+
+
+    /**
+     * 退款接口
+     *
+     * @param paramWrapper
+     * @param <T>
+     * @param <R>
+     * @return
+     * @throws Exception
+     */
+    <T, R extends Map> T refund0(RefundParamWrapper<T, R> paramWrapper) throws Exception;
+
+
+    /**
+     * 退款查询
+     *
+     * @param paramWrapper
+     * @param <T>
+     * @param <R>
+     * @return
+     * @throws Exception
+     */
+    <T, R extends Map> T refundQuery0(RefundQueryParamWrapper<T, R> paramWrapper) throws Exception;
+
+    /**
+     * 关闭订单接口
+     *
+     * @param paramWrapper
+     * @param <T>
+     * @param <R>
+     * @return
+     * @throws Exception
+     */
+    <T, R extends Map> T close0(CloseParamWrapper<T, R> paramWrapper) throws Exception;
+
+    /**
+     * 撤销订单接口
+     *
+     * @param paramWrapper
+     * @param <T>
+     * @param <R>
+     * @return
+     * @throws Exception
+     */
+    <T, R extends Map> T cancel0(CancelParamWrapper<T, R> paramWrapper) throws Exception;
+
+    /**
+     * 下载账单接口
+     *
+     * @param paramWrapper
+     * @param <T>
+     * @param <R>
+     * @return
+     * @throws Exception
+     */
+    <T, R extends Map> T downloadBill0(DownloadBillParamWrapper<T, R> paramWrapper) throws Exception;
 
 }

@@ -1,6 +1,8 @@
 package io.github.halo.pay.api.resp;
 
 import com.alipay.api.AlipayResponse;
+import com.alipay.api.response.AlipayTradeQueryResponse;
+import io.github.halo.pay.util.DateUtil;
 
 /**
  * Created on 2021/9/22.
@@ -14,6 +16,11 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
         return new AliRespConvert<T>() {
             @Override
             public T convert(AlipayResponse resp) {
+                if (resp.isSuccess()) {
+
+                } else {
+                }
+                System.out.println(resp);
                 return null;
             }
         };
@@ -24,6 +31,7 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
         return new AliRespConvert<T>() {
             @Override
             public T convert(AlipayResponse resp) {
+                System.out.println(resp);
                 return null;
             }
         };
@@ -31,6 +39,88 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
 
     @Override
     public AliRespConvert orderQueryRespConvert() {
+        return new AliRespConvert<T>() {
+            @Override
+            public T convert(AlipayResponse resp) {
+                if (resp.isSuccess()) {
+                    AlipayTradeQueryResponse response = (AlipayTradeQueryResponse) resp;
+                    OrderQueryResp orderQueryResp = new OrderQueryResp() {
+                        @Override
+                        public String tradeNo() {
+                            return response.getTradeNo();
+                        }
+
+                        @Override
+                        public String outTradeNo() {
+                            return response.getOutTradeNo();
+                        }
+
+                        @Override
+                        public String tradeStatus() {
+                            return response.getTradeStatus();
+                        }
+
+                        @Override
+                        public String totalAmount() {
+                            return response.getTotalAmount();
+                        }
+
+                        @Override
+                        public String gmtPayment() {
+                            //使用 本次交易打款给卖家的时间 作为付款时间
+                            return DateUtil.dateToString(response.getSendPayDate(), DateUtil.FULL_FORMAT);
+                        }
+                    };
+                    return (T) PayApiRespBuilder.success(orderQueryResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.getSubMsg(), resp);
+                }
+            }
+        };
+    }
+
+    @Override
+    public AliRespConvert refundRespConvert() {
+        return new AliRespConvert<T>() {
+            @Override
+            public T convert(AlipayResponse resp) {
+                return null;
+            }
+        };
+    }
+
+    @Override
+    public AliRespConvert refundQueryRespConvert() {
+        return new AliRespConvert<T>() {
+            @Override
+            public T convert(AlipayResponse resp) {
+                return null;
+            }
+        };
+    }
+
+    @Override
+    public AliRespConvert closeRespConvert() {
+        return new AliRespConvert<T>() {
+            @Override
+            public T convert(AlipayResponse resp) {
+                return null;
+            }
+        };
+    }
+
+    @Override
+    public AliRespConvert cancelRespConvert() {
+        return new AliRespConvert<T>() {
+            @Override
+            public T convert(AlipayResponse resp) {
+                return null;
+            }
+        };
+    }
+
+    @Override
+    public AliRespConvert downloadBillRespConvert() {
         return new AliRespConvert<T>() {
             @Override
             public T convert(AlipayResponse resp) {

@@ -2,10 +2,7 @@ package io.github.halo.pay.api.impl;
 
 import com.github.wxpay.sdk.WXPay;
 import io.github.halo.pay.api.WXPayApi;
-import io.github.halo.pay.api.wrap.FacePayParamWrapper;
-import io.github.halo.pay.api.wrap.OrderQueryParamWrapper;
-import io.github.halo.pay.api.wrap.UnifiedOrderParamWrapper;
-import lombok.extern.slf4j.Slf4j;
+import io.github.halo.pay.api.wrap.*;
 
 import java.util.Map;
 
@@ -15,7 +12,6 @@ import java.util.Map;
  *
  * @author yzm
  */
-@Slf4j
 public abstract class AbstractWXPayApi implements WXPayApi {
 
     private WXPay wxPayClient;
@@ -73,6 +69,42 @@ public abstract class AbstractWXPayApi implements WXPayApi {
     public <T, R extends Map> T query0(OrderQueryParamWrapper<T, R> queryParam) throws Exception {
         Map da = queryParam.wrap();
         Map<String, String> resp = wxPayClient.orderQuery(da);
+        return (T) resp;
+    }
+
+    @Override
+    public <T, R extends Map> T refund0(RefundParamWrapper<T, R> paramWrapper) throws Exception {
+        Map da = paramWrapper.wrap();
+        Map<String, String> resp = wxPayClient.orderQuery(da);
+        return (T) resp;
+    }
+
+
+    @Override
+    public <T, R extends Map> T refundQuery0(RefundQueryParamWrapper<T, R> paramWrapper) throws Exception {
+        Map da = paramWrapper.wrap();
+        Map<String, String> resp = wxPayClient.refundQuery(da);
+        return (T) resp;
+    }
+
+    @Override
+    public <T, R extends Map> T cancel0(CancelParamWrapper<T, R> paramWrapper) throws Exception {
+        Map da = paramWrapper.wrap();
+        Map<String, String> resp = wxPayClient.reverse(da);
+        return (T) resp;
+    }
+
+    @Override
+    public <T, R extends Map> T close0(CloseParamWrapper<T, R> paramWrapper) throws Exception {
+        Map da = paramWrapper.wrap();
+        Map<String, String> resp = wxPayClient.closeOrder(da);
+        return (T) resp;
+    }
+
+    @Override
+    public <T, R extends Map> T downloadBill0(DownloadBillParamWrapper<T, R> paramWrapper) throws Exception {
+        Map da = paramWrapper.wrap();
+        Map<String, String> resp = wxPayClient.downloadBill(da);
         return (T) resp;
     }
 }

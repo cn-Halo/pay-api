@@ -1,9 +1,6 @@
 package io.github.halo.pay.api.wrap;
 
-import io.github.halo.pay.api.param.FacePayParam;
-import io.github.halo.pay.api.param.OrderQueryParam;
-import io.github.halo.pay.api.param.RefundParam;
-import io.github.halo.pay.api.param.WapPayParam;
+import io.github.halo.pay.api.param.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,16 +19,16 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
         UnifiedOrderParamWrapper unifiedOrderParamWrapper = new UnifiedOrderParamWrapper<Object, Map<String, String>>() {
             @Override
             public Map wrap() {
-                Map<String, String> map = new HashMap<>();
-                map.put("body", wapPayParam.subject());
-                map.put("out_trade_no", wapPayParam.outTradeNo());
-                map.put("total_fee", wapPayParam.totalAmount());
-//                map.put("spbill_create_ip", wapPayParam.totalAmount());
-                map.put("notify_url", wapPayParam.notifyUrl());
-//                map.put("trade_type", wapPayParam.notifyUrl());
-                map.put("time_expire", wapPayParam.timeExpire());
-//                map.put("openid",openid);
-                return map;
+                Map<String, String> da = new HashMap<>();
+                da.put("body", wapPayParam.subject());
+                da.put("out_trade_no", wapPayParam.outTradeNo());
+                da.put("total_fee", wapPayParam.totalAmount());
+//                da.put("spbill_create_ip", wapPayParam.totalAmount());
+                da.put("notify_url", wapPayParam.notifyUrl());
+//                da.put("trade_type", wapPayParam.notifyUrl());
+                da.put("time_expire", wapPayParam.timeExpire());
+//                da.put("openid",openid);
+                return da;
             }
         };
         return unifiedOrderParamWrapper;
@@ -85,5 +82,59 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
             }
         };
         return refundParamWrapper;
+    }
+
+    @Override
+    public RefundQueryParamWrapper refundQueryParamWrapper(RefundQueryParam refundQueryParam) {
+        RefundQueryParamWrapper refundQueryParamWrapper = new RefundQueryParamWrapper<Object, Map<String, String>>() {
+            @Override
+            public Map wrap() {
+                Map<String, String> da = new HashMap<>();
+                da.put("out_trade_no", refundQueryParam.outTradeNo());
+                da.put("out_refund_no", refundQueryParam.outRefundNo());
+                return da;
+            }
+        };
+        return refundQueryParamWrapper;
+    }
+
+    @Override
+    public CloseParamWrapper closeParamWrapper(CloseParam closeParam) {
+        CloseParamWrapper closeParamWrapper = new CloseParamWrapper<Object, Map<String, String>>() {
+            @Override
+            public Map wrap() {
+                Map<String, String> da = new HashMap<>();
+                da.put("out_trade_no", closeParam.outTradeNo());
+                return da;
+            }
+        };
+        return closeParamWrapper;
+    }
+
+    @Override
+    public CancelParamWrapper cancelParamWrapper(CancelParam cancelParam) {
+        CancelParamWrapper cancelParamWrapper = new CancelParamWrapper<Object, Map<String, String>>() {
+            @Override
+            public Map wrap() {
+                Map<String, String> da = new HashMap<>();
+                da.put("out_trade_no", cancelParam.outTradeNo());
+                return da;
+            }
+        };
+        return cancelParamWrapper;
+    }
+
+    @Override
+    public DownloadBillParamWrapper downloadBillParamWrapper(DownloadBillParam downloadBillParam) {
+        DownloadBillParamWrapper downloadBillParamWrapper = new DownloadBillParamWrapper<Object, Map<String, String>>() {
+            @Override
+            public Map wrap() {
+                Map<String, String> da = new HashMap<>();
+                da.put("bill_date", downloadBillParam.billDate());
+                da.put("bill_type", downloadBillParam.billType());
+                return da;
+            }
+        };
+        return downloadBillParamWrapper;
     }
 }

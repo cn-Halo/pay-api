@@ -2,12 +2,9 @@ package io.github.halo.pay.api.impl;
 
 import com.github.wxpay.sdk.WXPay;
 import io.github.halo.pay.api.param.*;
+import io.github.halo.pay.api.resp.DefaultWXRespConvertManager;
 import io.github.halo.pay.api.resp.WXRespConvertManager;
-import io.github.halo.pay.api.wrap.FacePayParamWrapper;
-import io.github.halo.pay.api.wrap.OrderQueryParamWrapper;
-import io.github.halo.pay.api.wrap.UnifiedOrderParamWrapper;
-import io.github.halo.pay.api.wrap.WXParamWrapperManager;
-import lombok.extern.slf4j.Slf4j;
+import io.github.halo.pay.api.wrap.*;
 
 import java.util.Map;
 
@@ -17,11 +14,11 @@ import java.util.Map;
  *
  * @author yzm
  */
-@Slf4j
+
 public class WXPayApiImpl extends AbstractWXPayApi {
 
-    private WXParamWrapperManager wxParamWrapperManager;
-    private WXRespConvertManager wxRespConvertManager;
+    private WXParamWrapperManager wxParamWrapperManager = new DefaultWXParamWrapperManager();
+    private WXRespConvertManager wxRespConvertManager = new DefaultWXRespConvertManager();
 
     public WXPayApiImpl(WXPay wxPayClient) {
         super(wxPayClient);
@@ -55,32 +52,47 @@ public class WXPayApiImpl extends AbstractWXPayApi {
 
     @Override
     public <T> T refund(RefundParam<T> refundParam) throws Exception {
-        return null;
+        RefundParamWrapper refundParamWrapper = wxParamWrapperManager.refundParamWrapper(refundParam);
+        Map<String, String> resp = (Map<String, String>) super.refund0(refundParamWrapper);
+        return (T) wxRespConvertManager.refundRespConvert().convert(resp);
     }
 
     @Override
-    public Object refundQuery(String outTradeNo) throws Exception {
-        return null;
+    public <T> T refundQuery(RefundQueryParam<T> refundQueryParam) throws Exception {
+        RefundQueryParamWrapper refundQueryParamWrapper = wxParamWrapperManager.refundQueryParamWrapper(refundQueryParam);
+        Map<String, String> resp = (Map<String, String>) super.refundQuery0(refundQueryParamWrapper);
+        return (T) wxRespConvertManager.refundQueryRespConvert().convert(resp);
     }
 
     @Override
-    public Object close(String outTradeNo) throws Exception {
-        return null;
+    public <T> T close(CloseParam closeParam) throws Exception {
+        CloseParamWrapper closeParamWrapper = wxParamWrapperManager.closeParamWrapper(closeParam);
+        Map<String, String> resp = (Map<String, String>) super.close0(closeParamWrapper);
+        return (T) wxRespConvertManager.closeRespConvert().convert(resp);
     }
+
 
     @Override
     public <T> T cancel(CancelParam<T> cancelParam) throws Exception {
-        return null;
+        CancelParamWrapper cancelParamWrapper = wxParamWrapperManager.cancelParamWrapper(cancelParam);
+        Map<String, String> resp = (Map<String, String>) super.cancel0(cancelParamWrapper);
+        return (T) wxRespConvertManager.cancelRespConvert().convert(resp);
     }
 
     @Override
-    public Object downloadBill(String billDate, String billType) throws Exception {
-        return null;
+    public <T> T downloadBill(DownloadBillParam<T> downloadBillParam) throws Exception {
+        DownloadBillParamWrapper downloadBillParamWrapper = wxParamWrapperManager.downloadBillParamWrapper(downloadBillParam);
+        Map<String, String> resp = (Map<String, String>) super.downloadBill0(downloadBillParamWrapper);
+        return (T) wxRespConvertManager.downloadBillRespConvert().convert(resp);
     }
-
 
     public void setParamWrapperManager(WXParamWrapperManager wxParamWrapperManager) {
         this.wxParamWrapperManager = wxParamWrapperManager;
     }
+
+    public void setRespConvertManager(WXRespConvertManager respConvertManager) {
+        this.wxRespConvertManager = respConvertManager;
+    }
+
 
 }

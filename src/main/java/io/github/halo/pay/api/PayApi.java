@@ -54,21 +54,21 @@ public interface PayApi extends Capacity {
     /**
      * 退款查询接口
      *
-     * @param outTradeNo
+     * @param refundQueryParam
      * @return
      * @throws Exception
      */
-    Object refundQuery(String outTradeNo) throws Exception;
+    <T> T refundQuery(RefundQueryParam<T> refundQueryParam) throws Exception;
 
 
     /**
      * 统一关闭订单接口
      *
-     * @param outTradeNo
+     * @param closeParam
      * @return
      * @throws Exception
      */
-    Object close(String outTradeNo) throws Exception;
+    <T> T close(CloseParam closeParam) throws Exception;
 
 
     /**
@@ -83,12 +83,10 @@ public interface PayApi extends Capacity {
     /**
      * 下载对账单
      *
-     * @param billType 账单类型
-     * @param billDate 账单日期 yyyy-MM-dd
      * @return
      * @throws Exception
      */
-    Object downloadBill(String billDate, String billType) throws Exception;
+    <T> T downloadBill(DownloadBillParam<T> downloadBillParam) throws Exception;
 
 
 }

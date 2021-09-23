@@ -13,4 +13,15 @@ public interface AliRespConvertManager<T> extends RespConvertManager {
 
     AliRespConvert orderQueryRespConvert();
 
+    AliRespConvert refundRespConvert();
+
+    AliRespConvert refundQueryRespConvert();
+
+    AliRespConvert closeRespConvert();
+
+    AliRespConvert cancelRespConvert();
+
+    AliRespConvert downloadBillRespConvert();
+
+
 }

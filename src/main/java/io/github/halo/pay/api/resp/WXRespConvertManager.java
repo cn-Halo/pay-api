@@ -14,5 +14,15 @@ public interface WXRespConvertManager<T> extends RespConvertManager {
 
     WXRespConvert orderQueryRespConvert();
 
+    WXRespConvert refundRespConvert();
+
+    WXRespConvert refundQueryRespConvert();
+
+    WXRespConvert closeRespConvert();
+
+    WXRespConvert cancelRespConvert();
+
+    WXRespConvert downloadBillRespConvert();
+
 
 }
