@@ -80,8 +80,30 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
     public WXRespConvert refundRespConvert() {
         return new WXRespConvert<T>() {
             @Override
-            public T convert(Map resp) {
-                return null;
+            public T convert(Map<String,String> resp) {
+                if (WXPayConstants.SUCCESS.equals(resp.get("return_code")) &&
+                        WXPayConstants.SUCCESS.equals(resp.get("result_code"))) {
+                    RefundResp refundResp = new RefundResp() {
+                        @Override
+                        public String tradeNo() {
+                            return resp.get();
+                        }
+
+                        @Override
+                        public String outTradeNo() {
+                            return null;
+                        }
+
+                        @Override
+                        public String refundFee() {
+                            return null;
+                        }
+                    };
+                    return (T) PayApiRespBuilder.success(refundResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.get("return_msg") + ":" + resp.get("err_code_des"), resp);
+                }
+
             }
         };
     }
