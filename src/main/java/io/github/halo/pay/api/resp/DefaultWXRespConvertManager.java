@@ -113,8 +113,49 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
     public WXRespConvert refundQueryRespConvert() {
         return new WXRespConvert<T>() {
             @Override
-            public T convert(Map resp) {
-                return null;
+            public T convert(Map<String, String> resp) {
+                if (WXPayConstants.SUCCESS.equals(resp.get("return_code")) &&
+                        WXPayConstants.SUCCESS.equals(resp.get("result_code"))) {
+                    RefundQueryResp refundQueryResp = new RefundQueryResp() {
+                        @Override
+                        public String outTradeNo() {
+                            return resp.get("out_trade_no");
+                        }
+
+                        @Override
+                        public String tradeNo() {
+                            return resp.get("transaction_id");
+                        }
+
+                        @Override
+                        public String totalAmount() {
+                            return resp.get("total_fee");
+                        }
+
+                        @Override
+                        public String outRefundNo() {
+                            return resp.get("out_refund_no_0");
+                        }
+
+                        @Override
+                        public String refundFee() {
+                            return resp.get("refund_fee_0") == null ? null : MathUtil.fenToYuan(resp.get("refund_fee_0"));
+                        }
+
+                        @Override
+                        public String refundStatus() {
+                            return resp.get("refund_status_0");
+                        }
+
+                        @Override
+                        public String gmtRefundPay() {
+                            return resp.get("refund_success_time_0");
+                        }
+                    };
+                    return (T) PayApiRespBuilder.success(refundQueryResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.get("return_msg") + ":" + resp.get("err_code_des"), resp);
+                }
             }
         };
     }

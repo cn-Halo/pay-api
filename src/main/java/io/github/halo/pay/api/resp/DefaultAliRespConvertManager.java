@@ -1,6 +1,7 @@
 package io.github.halo.pay.api.resp;
 
 import com.alipay.api.AlipayResponse;
+import com.alipay.api.response.AlipayTradeFastpayRefundQueryResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import io.github.halo.pay.util.DateUtil;
@@ -113,7 +114,50 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
         return new AliRespConvert<T>() {
             @Override
             public T convert(AlipayResponse resp) {
-                return null;
+                if (resp.isSuccess()) {
+                    AlipayTradeFastpayRefundQueryResponse response = (AlipayTradeFastpayRefundQueryResponse) resp;
+                    RefundQueryResp refundQueryRespResp = new RefundQueryResp() {
+
+                        @Override
+                        public String outTradeNo() {
+                            return response.getOutTradeNo();
+                        }
+
+                        @Override
+                        public String tradeNo() {
+                            return response.getTradeNo();
+                        }
+
+                        @Override
+                        public String totalAmount() {
+                            return response.getTotalAmount();
+                        }
+
+                        @Override
+                        public String outRefundNo() {
+                            return response.getOutRequestNo();
+                        }
+
+                        @Override
+                        public String refundFee() {
+                            return refundFee();
+                        }
+
+                        @Override
+                        public String refundStatus() {
+                            return response.getRefundStatus();
+                        }
+
+                        @Override
+                        public String gmtRefundPay() {
+                            return response.getGmtRefundPay() == null ? null : DateUtil.dateToString(response.getGmtRefundPay(), DateUtil.FULL_FORMAT);
+                        }
+                    };
+                    return (T) PayApiRespBuilder.success(refundQueryRespResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.getMsg() + ":" + resp.getSubMsg(), resp);
+                }
+
             }
         };
     }

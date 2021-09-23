@@ -55,7 +55,7 @@ public interface RefundQueryResp {
     String refundFee();
 
     /**
-     * 微信退款状态：
+     * 微信退款状态：refund_status_$n
      * SUCCESS—退款成功
      * REFUNDCLOSE—退款关闭，指商户发起退款失败的情况。
      * PROCESSING—退款处理中
@@ -74,7 +74,7 @@ public interface RefundQueryResp {
     /**
      * 退款完成时间
      * 支付宝 gmt_refund_pay
-     * 微信refund_success_time_$n
+     * 微信 refund_success_time_$n
      * @return
      */
     String gmtRefundPay();
