@@ -80,23 +80,24 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
     public WXRespConvert refundRespConvert() {
         return new WXRespConvert<T>() {
             @Override
-            public T convert(Map<String,String> resp) {
+            public T convert(Map<String, String> resp) {
+                //注意 此处result_code为SUCCESS，仅表示退款申请接收成功，结果通过退款查询接口查询
                 if (WXPayConstants.SUCCESS.equals(resp.get("return_code")) &&
                         WXPayConstants.SUCCESS.equals(resp.get("result_code"))) {
                     RefundResp refundResp = new RefundResp() {
                         @Override
-                        public String tradeNo() {
-                            return resp.get();
+                        public String refundNo() {
+                            return resp.get("refund_id");
                         }
 
                         @Override
                         public String outTradeNo() {
-                            return null;
+                            return resp.get("out_trade_no");
                         }
 
                         @Override
                         public String refundFee() {
-                            return null;
+                            return resp.get("refund_fee") == null ? null : MathUtil.fenToYuan(resp.get("refund_fee"));
                         }
                     };
                     return (T) PayApiRespBuilder.success(refundResp, resp);
