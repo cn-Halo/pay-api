@@ -9,12 +9,13 @@ import io.github.halo.pay.api.param.*;
  */
 public interface ParamWrapperManager {
 
+    ParamWrapper payParamWrapper(InParam param);
+
     FacePayParamWrapper facePayParamWrapper(FacePayParam payParam);
 
     OrderQueryParamWrapper orderQueryParamWrapper(OrderQueryParam queryParam);
 
     RefundParamWrapper refundParamWrapper(RefundParam refundParam);
-
 
 
     RefundQueryParamWrapper refundQueryParamWrapper(RefundQueryParam refundQueryParam);

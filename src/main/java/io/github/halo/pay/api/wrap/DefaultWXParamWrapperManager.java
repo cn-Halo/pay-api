@@ -34,13 +34,31 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
                 da.put("total_fee", wapPayParam.totalAmount() != null ? MathUtil.yuanToFen(wapPayParam.totalAmount()) : null);
 //                da.put("spbill_create_ip", wapPayParam.totalAmount());
                 da.put("notify_url", wapPayParam.notifyUrl());
-//                da.put("trade_type", wapPayParam.notifyUrl());
+                da.put("trade_type", wapPayParam.tradeType().name());
                 da.put("time_expire", wapPayParam.timeExpire() != null ? DateUtil.string2String(wapPayParam.timeExpire(), DateUtil.FULL_FORMAT, DateUtil.YYYYMMDDHHMMSS_FORMAT) : null); //入参格式
                 da.put("openid", wapPayParam.openId());
                 return da;
             }
         };
         return unifiedOrderParamWrapper;
+    }
+
+    @Override
+    public ParamWrapper payParamWrapper(InParam inParam) {
+        PayParamWrapper payParamWrapper = new PayParamWrapper<Object, Map<String, String>>() {
+            @Override
+            public Map wrap() {
+                Map<String, String> da = new HashMap<>();
+//                da.put("body", payParam.subject());
+//                da.put("out_trade_no", payParam.outTradeNo());
+//                da.put("total_fee", payParam.totalAmount() != null ? MathUtil.yuanToFen(payParam.totalAmount()) : null);
+////                da.put("spbill_create_ip", payParam/);
+//                da.put("auth_code", payParam.authCode());
+////                da.put("time_expire", payParam.timeExpire());
+                return da;
+            }
+        };
+        return payParamWrapper;
     }
 
     @Override
