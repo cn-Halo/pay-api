@@ -17,8 +17,39 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
     public WXRespConvert wapPayRespConvert() {
         return new WXRespConvert<T>() {
             @Override
-            public T convert(Map resp) {
-                return null;
+            public T convert(Map<String, String> resp) {
+                if (WXPayConstants.SUCCESS.equals(resp.get("return_code")) &&
+                        WXPayConstants.SUCCESS.equals(resp.get("result_code"))) {
+                    WapPayResp wapPayResp = new WapPayResp() {
+                        @Override
+                        public String data() {
+                            String tradeType = resp.get("trade_type");
+                            //JSAPI支付（或小程序支付） 入参openid必传
+                            if ("JSAPI".equals(tradeType)) {
+                                return resp.get("prepay_id");
+                            } else if ("NATIVE".equals(tradeType)) {
+                                //NATIVE支付
+                                return resp.get("code_url");
+                            } else if ("APP".equals(tradeType)) {
+                                //app支付
+                                return resp.get("prepay_id");
+                            } else if ("MWEB".equals(tradeType)) {
+                                //H5支付
+                                return resp.get("mweb_url");
+                            }
+//                            map.put("appId", resp.get("appid"));
+//                            map.put("timeStamp", String.valueOf(new Date().getTime() / 1000));
+//                            map.put("nonceStr", WXPayUtil.generateNonceStr());
+//                            map.put("package", "prepay_id=" + resp.get("prepay_id"));
+//                            map.put("signType", WXPayConstants.SignType.HMACSHA256.name());
+//                            map.put("paySign", paySign);
+                            return null;
+                        }
+                    };
+                    return (T) PayApiRespBuilder.success(wapPayResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.get("return_msg") + ":" + resp.get("err_code_des"), resp);
+                }
             }
         };
 
@@ -28,8 +59,36 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
     public WXRespConvert facePayRespConvert() {
         return new WXRespConvert<T>() {
             @Override
-            public T convert(Map resp) {
-                return null;
+            public T convert(Map<String, String> resp) {
+                if (WXPayConstants.SUCCESS.equals(resp.get("return_code")) &&
+                        WXPayConstants.SUCCESS.equals(resp.get("result_code"))
+                        && "MICROPAY".equals(resp.get("trade_type"))) {
+                    FacePayResp facePayResp = new FacePayResp() {
+                        @Override
+                        public String tradeNo() {
+                            return resp.get("transaction_id");
+                        }
+
+                        @Override
+                        public String outTradeNo() {
+                            return resp.get("out_trade_no");
+                        }
+
+                        @Override
+                        public String totalAmount() {
+                            return resp.get("total_fee") == null ? null : MathUtil.fenToYuan(resp.get("total_fee"));
+                        }
+
+                        @Override
+                        public String gmtPayment() {
+                            //订单支付时间，格式为yyyyMMddHHmmss
+                            return resp.get("time_end") == null ? null : DateUtil.string2String(resp.get("time_end"), DateUtil.YYYYMMDDHHMMSS_FORMAT, DateUtil.FULL_FORMAT);
+                        }
+                    };
+                    return (T) PayApiRespBuilder.success(facePayResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.get("return_msg") + ":" + resp.get("err_code_des"), resp);
+                }
             }
         };
     }
@@ -165,7 +224,14 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
         return new WXRespConvert<T>() {
             @Override
             public T convert(Map resp) {
-                return null;
+                if (WXPayConstants.SUCCESS.equals(resp.get("return_code")) &&
+                        WXPayConstants.SUCCESS.equals(resp.get("result_code"))) {
+                    CloseResp closeResp = new CloseResp() {
+                    };
+                    return (T) PayApiRespBuilder.success(closeResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.get("return_msg") + ":" + resp.get("err_code_des"), resp);
+                }
             }
         };
     }
@@ -174,8 +240,19 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
     public WXRespConvert cancelRespConvert() {
         return new WXRespConvert<T>() {
             @Override
-            public T convert(Map resp) {
-                return null;
+            public T convert(Map<String, String> resp) {
+                CancelResp cancelResp = new CancelResp() {
+                    @Override
+                    public String recall() {
+                        return resp.get("recall");
+                    }
+                };
+                if (WXPayConstants.SUCCESS.equals(resp.get("return_code")) &&
+                        WXPayConstants.SUCCESS.equals(resp.get("result_code"))) {
+                    return (T) PayApiRespBuilder.success(cancelResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.get("return_msg") + ":" + resp.get("err_code_des"), resp).data(cancelResp);
+                }
             }
         };
     }
@@ -184,8 +261,19 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
     public WXRespConvert downloadBillRespConvert() {
         return new WXRespConvert<T>() {
             @Override
-            public T convert(Map resp) {
-                return null;
+            public T convert(Map<String, String> resp) {
+                if (WXPayConstants.SUCCESS.equals(resp.get("return_code")) &&
+                        WXPayConstants.SUCCESS.equals(resp.get("result_code"))) {
+                    DownloadBillResp downloadBillResp = new DownloadBillResp() {
+                        @Override
+                        public String data() {
+                            return resp.get("data");
+                        }
+                    };
+                    return (T) PayApiRespBuilder.success(downloadBillResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.get("return_msg") + ":" + resp.get("err_code_des"), resp);
+                }
             }
         };
     }

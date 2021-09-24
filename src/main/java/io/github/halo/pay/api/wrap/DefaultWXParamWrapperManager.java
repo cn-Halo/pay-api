@@ -1,6 +1,8 @@
 package io.github.halo.pay.api.wrap;
 
 import io.github.halo.pay.api.param.*;
+import io.github.halo.pay.util.DateUtil;
+import io.github.halo.pay.util.MathUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +15,13 @@ import java.util.Map;
  * @author yzm
  */
 public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
+    /**
+     * 交易类型trade_type
+     * JSAPI--JSAPI支付（或小程序支付）、NATIVE--Native支付、APP--app支付，MWEB--H5支付，不同trade_type决定了调起支付的方式，请根据支付产品正确上传
+     *
+     * @param wapPayParam
+     * @return
+     */
     @Override
     public UnifiedOrderParamWrapper unifiedOrderParamWrapper(WapPayParam wapPayParam) {
 
@@ -22,12 +31,12 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
                 Map<String, String> da = new HashMap<>();
                 da.put("body", wapPayParam.subject());
                 da.put("out_trade_no", wapPayParam.outTradeNo());
-                da.put("total_fee", wapPayParam.totalAmount());
+                da.put("total_fee", wapPayParam.totalAmount() != null ? MathUtil.yuanToFen(wapPayParam.totalAmount()) : null);
 //                da.put("spbill_create_ip", wapPayParam.totalAmount());
                 da.put("notify_url", wapPayParam.notifyUrl());
 //                da.put("trade_type", wapPayParam.notifyUrl());
-                da.put("time_expire", wapPayParam.timeExpire());
-//                da.put("openid",openid);
+                da.put("time_expire", wapPayParam.timeExpire() != null ? DateUtil.string2String(wapPayParam.timeExpire(), DateUtil.FULL_FORMAT, DateUtil.YYYYMMDDHHMMSS_FORMAT) : null); //入参格式
+                da.put("openid", wapPayParam.openId());
                 return da;
             }
         };
@@ -43,7 +52,7 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
                 Map<String, String> da = new HashMap<>();
                 da.put("body", payParam.subject());
                 da.put("out_trade_no", payParam.outTradeNo());
-                da.put("total_fee", payParam.totalAmount());
+                da.put("total_fee", payParam.totalAmount() != null ? MathUtil.yuanToFen(payParam.totalAmount()) : null);
 //                da.put("spbill_create_ip", payParam/);
                 da.put("auth_code", payParam.authCode());
 //                da.put("time_expire", payParam.timeExpire());
@@ -76,8 +85,8 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
                 da.put("out_trade_no", refundParam.outTradeNo());
                 da.put("out_refund_no", refundParam.outRefundNo());
 //                da.put("total_fee", refundParam.refundAmount());
-                da.put("refund_fee", refundParam.refundAmount());
-                da.put("reason", refundParam.refundReason());
+                da.put("refund_fee", refundParam.refundAmount() != null ? MathUtil.yuanToFen(refundParam.refundAmount()) : null);
+                da.put("reason", refundParam.refundReason());//todo 微信旧版并无此字段
                 return da;
             }
         };
@@ -130,7 +139,7 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
             @Override
             public Map wrap() {
                 Map<String, String> da = new HashMap<>();
-                da.put("bill_date", downloadBillParam.billDate());
+                da.put("bill_date", DateUtil.string2String(downloadBillParam.billDate(), DateUtil.YMD_FORMAT, DateUtil.YYYYMMDD_FORMAT));//微信格式 20140603
                 da.put("bill_type", downloadBillParam.billType());
                 return da;
             }

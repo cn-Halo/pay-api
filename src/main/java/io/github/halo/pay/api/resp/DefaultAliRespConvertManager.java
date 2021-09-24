@@ -1,9 +1,7 @@
 package io.github.halo.pay.api.resp;
 
 import com.alipay.api.AlipayResponse;
-import com.alipay.api.response.AlipayTradeFastpayRefundQueryResponse;
-import com.alipay.api.response.AlipayTradeQueryResponse;
-import com.alipay.api.response.AlipayTradeRefundResponse;
+import com.alipay.api.response.*;
 import io.github.halo.pay.util.DateUtil;
 
 /**
@@ -19,11 +17,17 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
             @Override
             public T convert(AlipayResponse resp) {
                 if (resp.isSuccess()) {
-
+                    AlipayTradeWapPayResponse response = (AlipayTradeWapPayResponse) resp;
+                    WapPayResp wapPayResp = new WapPayResp() {
+                        @Override
+                        public String data() {
+                            return response.getBody();
+                        }
+                    };
+                    return (T) PayApiRespBuilder.success(wapPayResp, resp);
                 } else {
+                    return (T) PayApiRespBuilder.subFail(resp.getMsg() + ":" + resp.getSubMsg(), resp);
                 }
-                System.out.println(resp);
-                return null;
             }
         };
     }
@@ -33,8 +37,43 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
         return new AliRespConvert<T>() {
             @Override
             public T convert(AlipayResponse resp) {
-                System.out.println(resp);
-                return null;
+                AlipayTradePayResponse response = (AlipayTradePayResponse) resp;
+                String code = resp.getCode();
+                FacePayResp facePayResp = new FacePayResp() {
+                    @Override
+                    public String tradeNo() {
+                        return response.getTradeNo();
+                    }
+
+                    @Override
+                    public String outTradeNo() {
+                        return response.getOutTradeNo();
+                    }
+
+                    @Override
+                    public String totalAmount() {
+                        return response.getTotalAmount();
+                    }
+
+                    @Override
+                    public String gmtPayment() {
+                        return DateUtil.dateToString(response.getGmtPayment(), DateUtil.FULL_FORMAT);
+                    }
+                };
+                //支付成功（10000）
+                if ("10000".equals(code)) {
+                    return (T) PayApiRespBuilder.success(facePayResp, resp);
+//                } else if ("40004".equals(code)) {
+//                    //支付失败（40004）
+//                    return (T) PayApiRespBuilder.subFail(resp.getMsg() + ":" + resp.getSubMsg(), resp);
+//                } else if ("10003".equals(code)) {
+//                    //等待用户付款（10003）
+                } else {
+                    //未知异常（20000）
+
+                    //除支付成功外 其余都视作业务失败
+                    return (T) PayApiRespBuilder.subFail(resp.getMsg() + ":" + resp.getSubMsg(), resp);
+                }
             }
         };
     }
@@ -167,7 +206,14 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
         return new AliRespConvert<T>() {
             @Override
             public T convert(AlipayResponse resp) {
-                return null;
+                if (resp.isSuccess()) {
+                    AlipayTradeFastpayRefundQueryResponse response = (AlipayTradeFastpayRefundQueryResponse) resp;
+                    CloseResp closeResp = new CloseResp() {
+                    };
+                    return (T) PayApiRespBuilder.success(closeResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.getMsg() + ":" + resp.getSubMsg(), resp);
+                }
             }
         };
     }
@@ -177,7 +223,18 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
         return new AliRespConvert<T>() {
             @Override
             public T convert(AlipayResponse resp) {
-                return null;
+                AlipayTradeCancelResponse response = (AlipayTradeCancelResponse) resp;
+                CancelResp cancelResp = new CancelResp() {
+                    @Override
+                    public String recall() {
+                        return response.getRetryFlag();
+                    }
+                };
+                if (resp.isSuccess()) {
+                    return (T) PayApiRespBuilder.success(cancelResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.getMsg() + ":" + resp.getSubMsg(), resp).data(cancelResp);
+                }
             }
         };
     }
@@ -187,7 +244,18 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
         return new AliRespConvert<T>() {
             @Override
             public T convert(AlipayResponse resp) {
-                return null;
+                if (resp.isSuccess()) {
+                    AlipayDataDataserviceBillDownloadurlQueryResponse response = (AlipayDataDataserviceBillDownloadurlQueryResponse) resp;
+                    DownloadBillResp downloadBillResp = new DownloadBillResp() {
+                        @Override
+                        public String data() {
+                            return response.getBillDownloadUrl();
+                        }
+                    };
+                    return (T) PayApiRespBuilder.success(downloadBillResp, resp);
+                } else {
+                    return (T) PayApiRespBuilder.subFail(resp.getMsg() + ":" + resp.getSubMsg(), resp);
+                }
             }
         };
     }
