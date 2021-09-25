@@ -10,9 +10,7 @@ import io.github.halo.pay.api.constant.WXTradeTypeEnum;
 public interface WapPayParam<T> extends InParam {
 
     String outTradeNo();
-
-    String payType();
-
+    
     /**
      * 订单金额  单位元 保留两位小数点
      *

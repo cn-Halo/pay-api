@@ -17,11 +17,13 @@ import java.util.Map;
 
 public class WXPayApiImpl extends AbstractWXPayApi {
 
-    private WXParamWrapperManager wxParamWrapperManager = new DefaultWXParamWrapperManager();
-    private WXRespConvertManager wxRespConvertManager = new DefaultWXRespConvertManager();
+    private WXParamWrapperManager wxParamWrapperManager;
+    private WXRespConvertManager wxRespConvertManager;
 
     public WXPayApiImpl(WXPay wxPayClient) {
         super(wxPayClient);
+        this.wxRespConvertManager = new DefaultWXRespConvertManager(wxPayClient);
+        this.wxParamWrapperManager = new DefaultWXParamWrapperManager();
     }
 
     @Override
@@ -39,8 +41,14 @@ public class WXPayApiImpl extends AbstractWXPayApi {
     }
 
     @Override
-    public <T> T pay(PayParam<T> payParam) throws Exception {
-        return null;
+    public <T> T pay(InParam<T> payParam) throws Exception {
+        if (payParam instanceof FacePayParam) {
+            return (T) facePay((FacePayParam) payParam);
+        }
+        if (payParam instanceof WapPayParam) {
+            return (T) wapPay((WapPayParam) payParam);
+        }
+        throw new UnsupportedOperationException("unsupported in param");
     }
 
     @Override

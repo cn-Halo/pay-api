@@ -1,10 +1,17 @@
 package io.github.halo.pay.api.resp;
 
+import com.github.wxpay.sdk.WXPay;
+import com.github.wxpay.sdk.WXPayConfig;
 import com.github.wxpay.sdk.WXPayConstants;
+import com.github.wxpay.sdk.WXPayUtil;
+import com.google.gson.Gson;
 import io.github.halo.pay.util.DateUtil;
 import io.github.halo.pay.util.MathUtil;
 
+import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created on 2021/9/22.
@@ -12,6 +19,11 @@ import java.util.Map;
  * @author yzm
  */
 public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
+    private WXPay wxPayClient;
+
+    public DefaultWXRespConvertManager(WXPay wxPayClient) {
+        this.wxPayClient = wxPayClient;
+    }
 
     @Override
     public WXRespConvert wapPayRespConvert() {
@@ -22,27 +34,30 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
                         WXPayConstants.SUCCESS.equals(resp.get("result_code"))) {
                     WapPayResp wapPayResp = new WapPayResp() {
                         @Override
-                        public String data() {
+                        public String data() throws Exception {
                             String tradeType = resp.get("trade_type");
                             //JSAPI支付（或小程序支付） 入参openid必传
-                            if ("JSAPI".equals(tradeType)) {
-                                return resp.get("prepay_id");
+                            if ("JSAPI".equals(tradeType) || "APP".equals(tradeType)) {
+                                //由于微信sdk没有提供WXPay的config字段的get方法 所以使用反射获取
+                                Field configField = WXPay.class.getDeclaredField("config");
+                                configField.setAccessible(true);
+                                WXPayConfig wxPayConfig = (WXPayConfig) configField.get(wxPayClient);
+                                TreeMap map = new TreeMap();
+                                map.put("appId", resp.get("appid"));
+                                map.put("timeStamp", String.valueOf(new Date().getTime() / 1000));
+                                map.put("nonceStr", WXPayUtil.generateNonceStr());
+                                map.put("package", "prepay_id=" + resp.get("prepay_id"));
+                                map.put("signType", WXPayConstants.SignType.HMACSHA256.name());
+                                map.put("paySign", WXPayUtil
+                                        .generateSignature(map, wxPayConfig.getKey(), WXPayConstants.SignType.HMACSHA256));
+                                return new Gson().toJson(map);
                             } else if ("NATIVE".equals(tradeType)) {
                                 //NATIVE支付
                                 return resp.get("code_url");
-                            } else if ("APP".equals(tradeType)) {
-                                //app支付
-                                return resp.get("prepay_id");
                             } else if ("MWEB".equals(tradeType)) {
-                                //H5支付
+                                //H5支付 不用传值openid
                                 return resp.get("mweb_url");
                             }
-//                            map.put("appId", resp.get("appid"));
-//                            map.put("timeStamp", String.valueOf(new Date().getTime() / 1000));
-//                            map.put("nonceStr", WXPayUtil.generateNonceStr());
-//                            map.put("package", "prepay_id=" + resp.get("prepay_id"));
-//                            map.put("signType", WXPayConstants.SignType.HMACSHA256.name());
-//                            map.put("paySign", paySign);
                             return null;
                         }
                     };

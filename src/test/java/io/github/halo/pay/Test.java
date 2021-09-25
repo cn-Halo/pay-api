@@ -1,11 +1,17 @@
 package io.github.halo.pay;
 
+import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import io.github.halo.pay.api.PayApi;
 import io.github.halo.pay.api.PayApiResp;
 import io.github.halo.pay.api.impl.AliPayApiImpl;
 import io.github.halo.pay.api.param.OrderQueryParam;
+import io.github.halo.pay.api.resp.OrderQueryResp;
+import io.github.halo.pay.api.resp.PayResp;
+import io.github.halo.pay.util.JsonUtil;
+
+import java.lang.reflect.Method;
 
 /**
  * Created on 2021/9/18.
@@ -57,7 +63,7 @@ public class Test {
 //            }
 //        });
 
-        PayApiResp payApiResp = (PayApiResp) payApi.query(new OrderQueryParam<Object>() {
+        PayApiResp<OrderQueryResp> payApiResp = (PayApiResp) payApi.query(new OrderQueryParam<Object>() {
             @Override
             public String tradeNo() {
                 return null;

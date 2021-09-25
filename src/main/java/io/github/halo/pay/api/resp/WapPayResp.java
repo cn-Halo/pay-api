@@ -5,8 +5,8 @@ package io.github.halo.pay.api.resp;
  *
  * @author yzm
  */
-public interface WapPayResp {
+public interface WapPayResp extends PayResp {
 
-    String data();
+    String data() throws Exception;
 
 }

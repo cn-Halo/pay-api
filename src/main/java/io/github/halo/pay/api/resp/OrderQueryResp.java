@@ -5,7 +5,7 @@ package io.github.halo.pay.api.resp;
  *
  * @author yzm
  */
-public interface OrderQueryResp {
+public interface OrderQueryResp extends PayResp {
 
     String tradeNo();
 

@@ -111,6 +111,7 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
                             //使用 '本次交易打款给卖家的时间' 作为付款时间
                             return DateUtil.dateToString(response.getSendPayDate(), DateUtil.FULL_FORMAT);
                         }
+
                     };
                     return (T) PayApiRespBuilder.success(orderQueryResp, resp);
                 } else {

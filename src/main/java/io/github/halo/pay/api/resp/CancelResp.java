@@ -5,7 +5,7 @@ package io.github.halo.pay.api.resp;
  *
  * @author yzm
  */
-public interface CancelResp {
+public interface CancelResp extends PayResp {
 
     /**
      * 是否需要继续调用撤销，Y-需要，N-不需要

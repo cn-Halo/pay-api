@@ -5,7 +5,7 @@ package io.github.halo.pay.api.resp;
  *
  * @author yzm
  */
-public interface DownloadBillResp {
+public interface DownloadBillResp  extends PayResp {
 
     String data();
 }

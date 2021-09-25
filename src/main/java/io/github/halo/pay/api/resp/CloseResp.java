@@ -5,7 +5,7 @@ package io.github.halo.pay.api.resp;
  *
  * @author yzm
  */
-public interface CloseResp {
+public interface CloseResp  extends PayResp {
 
 
 //    String tradeNo();

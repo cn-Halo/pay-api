@@ -44,24 +44,6 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
     }
 
     @Override
-    public ParamWrapper payParamWrapper(InParam inParam) {
-        PayParamWrapper payParamWrapper = new PayParamWrapper<Object, Map<String, String>>() {
-            @Override
-            public Map wrap() {
-                Map<String, String> da = new HashMap<>();
-//                da.put("body", payParam.subject());
-//                da.put("out_trade_no", payParam.outTradeNo());
-//                da.put("total_fee", payParam.totalAmount() != null ? MathUtil.yuanToFen(payParam.totalAmount()) : null);
-////                da.put("spbill_create_ip", payParam/);
-//                da.put("auth_code", payParam.authCode());
-////                da.put("time_expire", payParam.timeExpire());
-                return da;
-            }
-        };
-        return payParamWrapper;
-    }
-
-    @Override
     public FacePayParamWrapper facePayParamWrapper(FacePayParam payParam) {
 
         FacePayParamWrapper facePayParamWrapper = new FacePayParamWrapper<Object, Map<String, String>>() {
@@ -102,7 +84,6 @@ public class DefaultWXParamWrapperManager implements WXParamWrapperManager {
                 Map<String, String> da = new HashMap<>();
                 da.put("out_trade_no", refundParam.outTradeNo());
                 da.put("out_refund_no", refundParam.outRefundNo());
-//                da.put("total_fee", refundParam.refundAmount());
                 da.put("refund_fee", refundParam.refundAmount() != null ? MathUtil.yuanToFen(refundParam.refundAmount()) : null);
                 da.put("reason", refundParam.refundReason());//todo 微信旧版并无此字段
                 return da;

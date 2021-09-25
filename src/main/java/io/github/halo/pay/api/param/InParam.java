@@ -5,6 +5,6 @@ package io.github.halo.pay.api.param;
  *
  * @author yzm
  */
-public interface InParam {
+public interface InParam<T> {
 
 }

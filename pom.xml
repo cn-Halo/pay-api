@@ -1,54 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.github.cn-halo</groupId>
-	<artifactId>pay-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>pay-api</name>
-	<description>unite pay api</description>
-	<properties>
-		<java.version>1.8</java.version>
-	</properties>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.github.cn-halo</groupId>
+    <artifactId>pay-api</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>pay-api</name>
+    <description>unite pay api</description>
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.sshapp</groupId>
-			<artifactId>wxpay-sdk</artifactId>
-			<version>3.0.9.1</version>
-		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>com.github.wxpay</groupId>-->
-<!--			<artifactId>wxpay-sdk</artifactId>-->
-<!--			<version>0.0.3</version>-->
-<!--		</dependency>-->
+    <dependencies>
+        <!--        <dependency>-->
+        <!--            <groupId>org.sshapp</groupId>-->
+        <!--            <artifactId>wxpay-sdk</artifactId>-->
+        <!--            <version>3.0.9.1</version>-->
+        <!--        </dependency>-->
+        <dependency>
+            <groupId>com.github.wxpay</groupId>
+            <artifactId>wxpay-sdk</artifactId>
+            <version>0.0.3</version>
+        </dependency>
 
-		<dependency>
-			<groupId>com.alipay.sdk</groupId>
-			<artifactId>alipay-sdk-java</artifactId>
-			<version>3.4.49.ALL</version>
-		</dependency>
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+            <version>3.4.49.ALL</version>
+        </dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>org.projectlombok</groupId>-->
-<!--			<artifactId>lombok</artifactId>-->
-<!--			<version>1.18.4</version>-->
-<!--		</dependency>-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.32</version>
+        </dependency>
+        <!--      将对象格式化为json-->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
+        </dependency>
+    </dependencies>
 
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.2.32</version>
-		</dependency>
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

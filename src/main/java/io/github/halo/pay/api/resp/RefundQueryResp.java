@@ -4,7 +4,7 @@ package io.github.halo.pay.api.resp;
  * @author yzm
  * @date 2021/9/23 22:34
  */
-public interface RefundQueryResp {
+public interface RefundQueryResp extends PayResp {
 
     String outTradeNo();
 
@@ -21,6 +21,7 @@ public interface RefundQueryResp {
      * 订单总金额
      * 微信 total_fee
      * 支付宝 total_amount
+     *
      * @return
      */
     String totalAmount();
@@ -35,6 +36,7 @@ public interface RefundQueryResp {
      * 支付宝 out_request_no
      * 微信 out_refund_no_$n
      * 商户退款单号
+     *
      * @return
      */
     String outRefundNo();
@@ -50,6 +52,7 @@ public interface RefundQueryResp {
      * 申请退款金额
      * 支付宝 refund_amount
      * 微信 refund_fee_$n
+     *
      * @return
      */
     String refundFee();
@@ -75,6 +78,7 @@ public interface RefundQueryResp {
      * 退款完成时间
      * 支付宝 gmt_refund_pay
      * 微信 refund_success_time_$n
+     *
      * @return
      */
     String gmtRefundPay();

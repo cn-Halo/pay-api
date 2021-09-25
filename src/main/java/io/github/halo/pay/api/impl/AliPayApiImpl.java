@@ -16,9 +16,7 @@ public class AliPayApiImpl extends AbstractAliPayApi {
 
     private AliParamWrapperManager aliParamWrapperManager = new DefaultAliParamWrapperManager();
     private AliRespConvertManager aliRespConvertManager = new DefaultAliRespConvertManager();
-
-    private AlipayClient alipayClient;
-
+    
     public AliPayApiImpl(AlipayClient alipayClient) {
         super(alipayClient);
     }
@@ -31,8 +29,14 @@ public class AliPayApiImpl extends AbstractAliPayApi {
     }
 
     @Override
-    public <T> T pay(PayParam<T> payParam) throws Exception {
-        return null;
+    public <T> T pay(InParam<T> payParam) throws Exception {
+        if (payParam instanceof FacePayParam) {
+            return (T) facePay((FacePayParam) payParam);
+        }
+        if (payParam instanceof WapPayParam) {
+            return (T) wapPay((WapPayParam) payParam);
+        }
+        throw new UnsupportedOperationException("unsupported in param");
     }
 
     @Override

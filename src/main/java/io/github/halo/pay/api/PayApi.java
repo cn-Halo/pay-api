@@ -26,7 +26,7 @@ public interface PayApi extends Capacity {
      * @return
      * @throws Exception
      */
-    <T> T pay(PayParam<T> payParam) throws Exception;
+    <T> T pay(InParam<T> payParam) throws Exception;
 
     /**
      * 统一查询订单接口

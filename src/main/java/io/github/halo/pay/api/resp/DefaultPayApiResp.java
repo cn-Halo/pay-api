@@ -1,20 +1,23 @@
 package io.github.halo.pay.api.resp;
 
 import io.github.halo.pay.api.PayApiResp;
+import io.github.halo.pay.util.JsonUtil;
+
+import java.lang.reflect.Method;
 
 /**
  * Created on 2021/6/26.
  *
  * @author yzm
  */
-public class DefaultPayApiResp<T> implements PayApiResp<T> {
+public class DefaultPayApiResp implements PayApiResp<PayResp> {
 
     private String code;
     private String msg;
     private String subCode;
     private String subMsg;
     private Object attachment;
-    private T data;
+    private PayResp data;
 
 
     public static PayApiResp success() {
@@ -66,7 +69,7 @@ public class DefaultPayApiResp<T> implements PayApiResp<T> {
     }
 
     @Override
-    public PayApiResp data(T data) {
+    public PayApiResp data(PayResp data) {
         this.data = data;
         return this;
     }
@@ -98,7 +101,7 @@ public class DefaultPayApiResp<T> implements PayApiResp<T> {
     }
 
     @Override
-    public T data() {
+    public PayResp data() {
         return this.data;
     }
 
@@ -110,13 +113,31 @@ public class DefaultPayApiResp<T> implements PayApiResp<T> {
 
     @Override
     public String toString() {
-        return "DefaultPayApiResp{" +
-                "code='" + code + '\'' +
-                ", msg='" + msg + '\'' +
-                ", subCode='" + subCode + '\'' +
-                ", subMsg='" + subMsg + '\'' +
-                ", attachment=" + attachment +
-                ", data=" + data +
-                '}';
+        //使用gson打印不出data 可能是匿名内部类的原因
+        Method[] methods = null;
+        String c = null;
+        if (this.data != null && (methods = this.data.getClass().getDeclaredMethods()).length > 0) {
+            String s = "{\r\n";
+            for (Method method : methods) {
+                method.setAccessible(true);
+                String name = method.getName();
+                Object value = null;
+                try {
+                    value = method.invoke(this.data);
+                } catch (Exception e) {
+                }
+                s += "\t\t\"" + name + "\": " + "\"" + value + "\",\r\n";
+            }
+            s += "}\r\n";
+            c = s;
+        }
+        String dataStr = "\t\"data\': " + c;
+        String str = JsonUtil.toJson(this);
+        if (str == null) {
+            return null;
+        }
+        int idx = str.lastIndexOf("}");
+        return str.substring(0, idx) + dataStr + "}\r\n";
+
     }
 }
