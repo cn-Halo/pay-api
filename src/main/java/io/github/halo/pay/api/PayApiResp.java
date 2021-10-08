@@ -38,4 +38,8 @@ public interface PayApiResp<T> {
 
     Object attachment();
 
+    default boolean isSuccess() {
+        return SUCCESS_CODE.equals(this.code()) && SUCCESS_CODE.equals(this.subCode());
+    }
+
 }
