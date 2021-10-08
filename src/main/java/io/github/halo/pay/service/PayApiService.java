@@ -11,11 +11,11 @@ import io.github.halo.pay.service.param.UnitePayParam;
  * @author yzm
  * @date 2021/9/24 22:44
  */
-public class PayService {
+public class PayApiService {
     private PayApi aliPayApi;
     private PayApi wxPayApi;
 
-    public PayService(AlipayClient alipayClient, WXPay wxPayClient) {
+    public PayApiService(AlipayClient alipayClient, WXPay wxPayClient) {
         this.aliPayApi = new AliPayApiImpl(alipayClient);
         this.wxPayApi = new WXPayApiImpl(wxPayClient);
     }
