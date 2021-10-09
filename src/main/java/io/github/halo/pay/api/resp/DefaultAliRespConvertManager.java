@@ -2,6 +2,10 @@ package io.github.halo.pay.api.resp;
 
 import com.alipay.api.AlipayResponse;
 import com.alipay.api.response.*;
+import io.github.halo.pay.api.resp.builder.FacePayRespBuilder;
+import io.github.halo.pay.api.resp.builder.OrderQueryRespBuilder;
+import io.github.halo.pay.service.constant.ALITradeStatus;
+import io.github.halo.pay.service.constant.TradeStatusEnum;
 import io.github.halo.pay.util.DateUtil;
 
 /**
@@ -39,41 +43,32 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
             public T convert(AlipayResponse resp) {
                 AlipayTradePayResponse response = (AlipayTradePayResponse) resp;
                 String code = resp.getCode();
-                FacePayResp facePayResp = new FacePayResp() {
-                    @Override
-                    public String tradeNo() {
-                        return response.getTradeNo();
-                    }
-
-                    @Override
-                    public String outTradeNo() {
-                        return response.getOutTradeNo();
-                    }
-
-                    @Override
-                    public String totalAmount() {
-                        return response.getTotalAmount();
-                    }
-
-                    @Override
-                    public String gmtPayment() {
-                        return DateUtil.dateToString(response.getGmtPayment(), DateUtil.FULL_FORMAT);
-                    }
-                };
+                FacePayRespBuilder facePayRespBuilder = FacePayRespBuilder.instance()
+                        .tradeNo(response.getTradeNo())
+                        .outTradeNo(response.getOutTradeNo())
+                        .totalAmount(response.getTotalAmount())
+                        .gmtPayment(DateUtil.dateToString(response.getGmtPayment(), DateUtil.FULL_FORMAT));
+                FacePayResp facePayResp = null;
                 //支付成功（10000）
                 if ("10000".equals(code)) {
-                    return (T) PayApiRespBuilder.success(facePayResp, resp);
-//                } else if ("40004".equals(code)) {
-//                    //支付失败（40004）
+                    facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.TRADE_SUCCESS.name())
+                            .tradeStatusDesc(TradeStatusEnum.TRADE_SUCCESS.msg()).build();
+                } else if ("40004".equals(code)) {
+                    //支付失败（40004）
+                    facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.TRADE_FAILED.name())
+                            .tradeStatusDesc(TradeStatusEnum.TRADE_FAILED.msg() + "：" + resp.getMsg() + "：" + resp.getSubMsg()).build();
 //                    return (T) PayApiRespBuilder.subFail(resp.getMsg() + ":" + resp.getSubMsg(), resp);
-//                } else if ("10003".equals(code)) {
-//                    //等待用户付款（10003）
+                } else if ("10003".equals(code)) {
+                    //等待用户付款（10003）
+                    facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.WAIT_BUYER_PAY.name())
+                            .tradeStatusDesc(TradeStatusEnum.WAIT_BUYER_PAY.msg()).build();
+//                    return (T) PayApiRespBuilder.subFail(resp.getMsg() + ":" + resp.getSubMsg(), resp);
                 } else {
                     //未知异常（20000）
-
-                    //除支付成功外 其余都视作业务失败
-                    return (T) PayApiRespBuilder.subFail(resp.getMsg() + ":" + resp.getSubMsg(), resp);
+                    facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.WAIT_BUYER_PAY.name())
+                            .tradeStatusDesc(TradeStatusEnum.WAIT_BUYER_PAY.msg() + "：" + resp.getMsg() + "：" + resp.getSubMsg()).build();
                 }
+                return (T) PayApiRespBuilder.success(facePayResp, resp);
             }
         };
     }
@@ -85,36 +80,39 @@ public class DefaultAliRespConvertManager<T> implements AliRespConvertManager<T>
             public T convert(AlipayResponse resp) {
                 if (resp.isSuccess()) {
                     AlipayTradeQueryResponse response = (AlipayTradeQueryResponse) resp;
-                    OrderQueryResp orderQueryResp = new OrderQueryResp() {
-                        @Override
-                        public String tradeNo() {
-                            return response.getTradeNo();
-                        }
-
-                        @Override
-                        public String outTradeNo() {
-                            return response.getOutTradeNo();
-                        }
-
-                        @Override
-                        public String tradeStatus() {
-                            return response.getTradeStatus();
-                        }
-
-                        @Override
-                        public String totalAmount() {
-                            return response.getTotalAmount();
-                        }
-
-                        @Override
-                        public String gmtPayment() {
+                    OrderQueryRespBuilder builder = OrderQueryRespBuilder.instance()
+                            .tradeNo(response.getTradeNo())
+                            .outTradeNo(response.getOutTradeNo())
+                            .totalAmount(response.getTotalAmount())
                             //使用 '本次交易打款给卖家的时间' 作为付款时间
-                            return DateUtil.dateToString(response.getSendPayDate(), DateUtil.FULL_FORMAT);
-                        }
+                            .gmtPayment(DateUtil.dateToString(response.getSendPayDate(), DateUtil.FULL_FORMAT));
 
-                    };
+                    OrderQueryResp orderQueryResp = null;
+                    String tradeStatus = null;
+                    String tradeStatusDesc = null;
+                    switch (response.getTradeStatus()) {
+
+                        case ALITradeStatus.WAIT_BUYER_PAY://交易创建，等待买家付款
+                            tradeStatus = TradeStatusEnum.WAIT_BUYER_PAY.name();
+                            tradeStatusDesc = TradeStatusEnum.WAIT_BUYER_PAY.msg();
+                            break;
+                        case ALITradeStatus.TRADE_CLOSED://未付款交易超时关闭，或支付完成后全额退款
+                            tradeStatus = TradeStatusEnum.TRADE_CLOSED.name();
+                            tradeStatusDesc = TradeStatusEnum.TRADE_CLOSED.msg();
+                            break;
+                        case ALITradeStatus.TRADE_SUCCESS://交易支付成功
+                            tradeStatus = TradeStatusEnum.TRADE_SUCCESS.name();
+                            tradeStatusDesc = TradeStatusEnum.TRADE_SUCCESS.msg();
+                            break;
+                        case ALITradeStatus.TRADE_FINISHED://交易结束，不可退款
+                            tradeStatus = TradeStatusEnum.TRADE_FINISHED.name();
+                            tradeStatusDesc = TradeStatusEnum.TRADE_FINISHED.msg();
+                            break;
+                    }
+                    orderQueryResp = builder.tradeStatus(tradeStatus).tradeStatusDesc(tradeStatusDesc).build();
                     return (T) PayApiRespBuilder.success(orderQueryResp, resp);
                 } else {
+                    //调用失败
                     return (T) PayApiRespBuilder.subFail(resp.getMsg() + ":" + resp.getSubMsg(), resp);
                 }
             }

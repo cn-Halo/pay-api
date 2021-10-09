@@ -41,4 +41,11 @@ public interface FacePayResp extends PayResp {
      * @return
      */
     String tradeStatus();
+
+    /**
+     * 交易状态说明
+     *
+     * @return
+     */
+    String tradeStatusDesc();
 }

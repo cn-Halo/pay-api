@@ -20,5 +20,9 @@ public enum TradeStatusEnum {
         this.msg = msg;
     }
 
+    public String msg() {
+        return this.msg;
+    }
+
 
 }

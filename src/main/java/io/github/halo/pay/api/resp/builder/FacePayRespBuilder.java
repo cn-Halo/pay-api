@@ -14,6 +14,7 @@ public class FacePayRespBuilder {
     private String totalAmount;
     private String gmtPayment;
     private String tradeStatus;
+    private String tradeStatusDesc;
 
 
     public static FacePayRespBuilder instance() {
@@ -45,31 +46,41 @@ public class FacePayRespBuilder {
         return this;
     }
 
+    public FacePayRespBuilder tradeStatusDesc(String tradeStatusDesc) {
+        this.tradeStatusDesc = tradeStatusDesc;
+        return this;
+    }
+
     public FacePayResp build() {
         return new FacePayResp() {
             @Override
             public String tradeNo() {
-                return this.tradeNo();
+                return tradeNo;
             }
 
             @Override
             public String outTradeNo() {
-                return this.outTradeNo();
+                return outTradeNo;
             }
 
             @Override
             public String totalAmount() {
-                return this.totalAmount();
+                return totalAmount;
             }
 
             @Override
             public String gmtPayment() {
-                return this.gmtPayment();
+                return gmtPayment;
             }
 
             @Override
             public String tradeStatus() {
-                return this.tradeStatus();
+                return tradeStatus;
+            }
+
+            @Override
+            public String tradeStatusDesc() {
+                return tradeStatusDesc;
             }
         };
     }

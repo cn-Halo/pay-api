@@ -13,6 +13,8 @@ public interface OrderQueryResp extends PayResp {
 
     String tradeStatus();
 
+    String tradeStatusDesc();
+
     String totalAmount();
 
 //    String subject();//支付宝 选填
@@ -21,6 +23,7 @@ public interface OrderQueryResp extends PayResp {
     String gmtPayment();
 
 //    String buyerLoginId();
+
 
 
 }

@@ -6,7 +6,9 @@ import com.github.wxpay.sdk.WXPayConstants;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.google.gson.Gson;
 import io.github.halo.pay.api.resp.builder.FacePayRespBuilder;
+import io.github.halo.pay.api.resp.builder.OrderQueryRespBuilder;
 import io.github.halo.pay.service.constant.TradeStatusEnum;
+import io.github.halo.pay.service.constant.WXTradeStatus;
 import io.github.halo.pay.util.DateUtil;
 import io.github.halo.pay.util.MathUtil;
 
@@ -89,19 +91,21 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
                     //支付成功
                     if (WXPayConstants.SUCCESS.equals(resp.get("result_code"))
                             && "MICROPAY".equals(resp.get("trade_type"))) {
-                        facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.TRADE_SUCCESS.name()).build();
+                        facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.TRADE_SUCCESS.name())
+                                .tradeStatusDesc(TradeStatusEnum.TRADE_SUCCESS.msg()).build();
                     } else {
                         //业务失败(result_code为FAIL)分为：支付结果未知 、支付确认失败
                         //支付结果未知，需要轮询查询接口
                         if ("SYSTEMERROR".equals(resp.get("err_code")) || "BANKERROR".equals(resp.get("err_code"))
                                 || "USERPAYING".equals(resp.get("err_code"))) {
-                            facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.WAIT_BUYER_PAY.name()).build();
+                            facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.WAIT_BUYER_PAY.name())
+                                    .tradeStatusDesc(TradeStatusEnum.WAIT_BUYER_PAY.msg()).build();
                         } else {
                             //支付确认失败，需要更换订单号重新下单支付
-                            facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.TRADE_FAILED.name()).build();
+                            facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.TRADE_FAILED.name())
+                                    .tradeStatusDesc(TradeStatusEnum.TRADE_FAILED.msg() + "：" + resp.get("err_code_des")).build();
                         }
                     }
-
                     return (T) PayApiRespBuilder.success(facePayResp, resp);
                 } else {
                     return (T) PayApiRespBuilder.subFail(resp.get("return_msg"), resp);
@@ -117,36 +121,56 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
             public T convert(Map<String, String> resp) {
                 if (WXPayConstants.SUCCESS.equals(resp.get("return_code")) &&
                         WXPayConstants.SUCCESS.equals(resp.get("result_code"))) {
+                    OrderQueryRespBuilder builder = OrderQueryRespBuilder.instance()
+                            .tradeNo(resp.get("transaction_id"))
+                            .outTradeNo(resp.get("out_trade_no"))
+//                            .tradeStatus(resp.get("trade_state"))
+                            .totalAmount(resp.get("total_fee") == null ? null : MathUtil.fenToYuan(resp.get("total_fee")))
+                            //订单支付时间，原格式为yyyyMMddHHmmss
+                            .gmtPayment(resp.get("time_end") == null ? null : DateUtil.string2String(resp.get("time_end"), DateUtil.YYYYMMDDHHMMSS_FORMAT, DateUtil.FULL_FORMAT));
 
-                    OrderQueryResp orderQueryResp = new OrderQueryResp() {
-                        @Override
-                        public String tradeNo() {
-                            return resp.get("transaction_id");
-                        }
-
-                        @Override
-                        public String outTradeNo() {
-                            return resp.get("out_trade_no");
-                        }
-
-                        @Override
-                        public String tradeStatus() {
-                            return resp.get("trade_state");
-                        }
-
-                        @Override
-                        public String totalAmount() {
-                            return resp.get("total_fee") == null ? null : MathUtil.fenToYuan(resp.get("total_fee"));
-                        }
-
-                        @Override
-                        public String gmtPayment() {
-                            //订单支付时间，格式为yyyyMMddHHmmss
-                            return resp.get("time_end") == null ? null : DateUtil.string2String(resp.get("time_end"), DateUtil.YYYYMMDDHHMMSS_FORMAT, DateUtil.FULL_FORMAT);
-                        }
-                    };
+                    OrderQueryResp orderQueryResp = null;
+                    String tradeStatus = null;
+                    String tradeStatusDesc = null;
+                    switch (resp.get("trade_state")) {
+                        case WXTradeStatus.SUCCESS://支付成功
+                            tradeStatus = TradeStatusEnum.TRADE_SUCCESS.name();
+                            tradeStatusDesc = TradeStatusEnum.TRADE_SUCCESS.msg();
+                            break;
+                        case WXTradeStatus.REFUND://转入退款
+                            //todo根据微信支付状态机，REFUND表示已退款，表明已经支付成功
+                            tradeStatus = TradeStatusEnum.TRADE_REFUND.name();
+                            tradeStatusDesc = TradeStatusEnum.TRADE_REFUND.msg();
+                            break;
+                        case WXTradeStatus.NOTPAY://未支付
+                            tradeStatus = TradeStatusEnum.WAIT_BUYER_PAY.name();
+                            tradeStatusDesc = TradeStatusEnum.WAIT_BUYER_PAY.msg();
+                            break;
+                        case WXTradeStatus.CLOSED://已关闭
+                            tradeStatus = TradeStatusEnum.TRADE_CLOSED.name();
+                            tradeStatusDesc = TradeStatusEnum.TRADE_CLOSED.msg();
+                            break;
+                        case WXTradeStatus.REVOKED://已撤销(刷卡支付)
+                            //todo 无法处理此状态
+                            //tradeStatus = TradeStatusEnum.TRADE_CLOSED.name();
+                            break;
+                        case WXTradeStatus.USERPAYING://-用户支付中
+                            tradeStatus = TradeStatusEnum.WAIT_BUYER_PAY.name();
+                            tradeStatusDesc = TradeStatusEnum.WAIT_BUYER_PAY.msg();
+                            break;
+                        case WXTradeStatus.PAYERROR://-支付失败(其他原因，如银行返回失败)
+                            tradeStatus = TradeStatusEnum.TRADE_FAILED.name();
+                            tradeStatusDesc = resp.get("trade_state_desc");
+                            break;
+                        case WXTradeStatus.ACCEPT://已接收，等待扣款
+                            tradeStatus = TradeStatusEnum.WAIT_BUYER_PAY.name();
+                            tradeStatusDesc = TradeStatusEnum.WAIT_BUYER_PAY.msg() + "：" + resp.get("trade_state_desc");
+                            break;
+                    }
+                    orderQueryResp = builder.tradeStatus(tradeStatus).tradeStatusDesc(tradeStatusDesc).build();
                     return (T) PayApiRespBuilder.success(orderQueryResp, resp);
                 } else {
+                    //网络失败
                     return (T) PayApiRespBuilder.subFail(resp.get("return_msg") + ":" + resp.get("err_code_des"), resp);
                 }
             }
