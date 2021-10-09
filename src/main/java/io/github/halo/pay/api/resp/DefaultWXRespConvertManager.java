@@ -7,8 +7,8 @@ import com.github.wxpay.sdk.WXPayUtil;
 import com.google.gson.Gson;
 import io.github.halo.pay.api.resp.builder.FacePayRespBuilder;
 import io.github.halo.pay.api.resp.builder.OrderQueryRespBuilder;
-import io.github.halo.pay.service.constant.TradeStatusEnum;
-import io.github.halo.pay.service.constant.WXTradeStatus;
+import io.github.halo.pay.api.constant.TradeStatusEnum;
+import io.github.halo.pay.api.constant.WXTradeStatus;
 import io.github.halo.pay.util.DateUtil;
 import io.github.halo.pay.util.MathUtil;
 

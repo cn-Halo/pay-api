@@ -4,8 +4,8 @@ import com.alipay.api.AlipayResponse;
 import com.alipay.api.response.*;
 import io.github.halo.pay.api.resp.builder.FacePayRespBuilder;
 import io.github.halo.pay.api.resp.builder.OrderQueryRespBuilder;
-import io.github.halo.pay.service.constant.ALITradeStatus;
-import io.github.halo.pay.service.constant.TradeStatusEnum;
+import io.github.halo.pay.api.constant.ALITradeStatus;
+import io.github.halo.pay.api.constant.TradeStatusEnum;
 import io.github.halo.pay.util.DateUtil;
 
 /**

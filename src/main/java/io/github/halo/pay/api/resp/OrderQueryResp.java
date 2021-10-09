@@ -25,5 +25,4 @@ public interface OrderQueryResp extends PayResp {
 //    String buyerLoginId();
 
 
-
 }

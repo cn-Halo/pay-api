@@ -1,4 +1,4 @@
-package io.github.halo.pay.service.constant;
+package io.github.halo.pay.api.constant;
 
 /**
  * Created on 2021/10/9.
