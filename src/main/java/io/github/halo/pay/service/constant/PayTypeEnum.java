@@ -6,6 +6,9 @@ package io.github.halo.pay.service.constant;
  */
 public enum PayTypeEnum {
 
+    WX,
+    ALI,
+
     WX_WAP_PAY,
     ALI_WAP_PAY,
 

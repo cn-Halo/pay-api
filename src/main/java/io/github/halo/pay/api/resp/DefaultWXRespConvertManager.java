@@ -5,6 +5,8 @@ import com.github.wxpay.sdk.WXPayConfig;
 import com.github.wxpay.sdk.WXPayConstants;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.google.gson.Gson;
+import io.github.halo.pay.api.resp.builder.FacePayRespBuilder;
+import io.github.halo.pay.service.constant.TradeStatusEnum;
 import io.github.halo.pay.util.DateUtil;
 import io.github.halo.pay.util.MathUtil;
 
@@ -75,34 +77,34 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
         return new WXRespConvert<T>() {
             @Override
             public T convert(Map<String, String> resp) {
-                if (WXPayConstants.SUCCESS.equals(resp.get("return_code")) &&
-                        WXPayConstants.SUCCESS.equals(resp.get("result_code"))
-                        && "MICROPAY".equals(resp.get("trade_type"))) {
-                    FacePayResp facePayResp = new FacePayResp() {
-                        @Override
-                        public String tradeNo() {
-                            return resp.get("transaction_id");
-                        }
+                if (WXPayConstants.SUCCESS.equals(resp.get("return_code"))) {
+                    //构建响应体
+                    FacePayRespBuilder facePayRespBuilder = FacePayRespBuilder.instance()
+                            .tradeNo(resp.get("transaction_id"))
+                            .outTradeNo(resp.get("out_trade_no"))
+                            .totalAmount(resp.get("total_fee") == null ? null : MathUtil.fenToYuan(resp.get("total_fee")))
+                            .gmtPayment(resp.get("time_end") == null ? null : DateUtil.string2String(resp.get("time_end"), DateUtil.YYYYMMDDHHMMSS_FORMAT, DateUtil.FULL_FORMAT));
 
-                        @Override
-                        public String outTradeNo() {
-                            return resp.get("out_trade_no");
+                    FacePayResp facePayResp = null;
+                    //支付成功
+                    if (WXPayConstants.SUCCESS.equals(resp.get("result_code"))
+                            && "MICROPAY".equals(resp.get("trade_type"))) {
+                        facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.TRADE_SUCCESS.name()).build();
+                    } else {
+                        //业务失败(result_code为FAIL)分为：支付结果未知 、支付确认失败
+                        //支付结果未知，需要轮询查询接口
+                        if ("SYSTEMERROR".equals(resp.get("err_code")) || "BANKERROR".equals(resp.get("err_code"))
+                                || "USERPAYING".equals(resp.get("err_code"))) {
+                            facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.WAIT_BUYER_PAY.name()).build();
+                        } else {
+                            //支付确认失败，需要更换订单号重新下单支付
+                            facePayResp = facePayRespBuilder.tradeStatus(TradeStatusEnum.TRADE_FAILED.name()).build();
                         }
+                    }
 
-                        @Override
-                        public String totalAmount() {
-                            return resp.get("total_fee") == null ? null : MathUtil.fenToYuan(resp.get("total_fee"));
-                        }
-
-                        @Override
-                        public String gmtPayment() {
-                            //订单支付时间，格式为yyyyMMddHHmmss
-                            return resp.get("time_end") == null ? null : DateUtil.string2String(resp.get("time_end"), DateUtil.YYYYMMDDHHMMSS_FORMAT, DateUtil.FULL_FORMAT);
-                        }
-                    };
                     return (T) PayApiRespBuilder.success(facePayResp, resp);
                 } else {
-                    return (T) PayApiRespBuilder.subFail(resp.get("return_msg") + ":" + resp.get("err_code_des"), resp);
+                    return (T) PayApiRespBuilder.subFail(resp.get("return_msg"), resp);
                 }
             }
         };
@@ -115,6 +117,7 @@ public class DefaultWXRespConvertManager<T> implements WXRespConvertManager<T> {
             public T convert(Map<String, String> resp) {
                 if (WXPayConstants.SUCCESS.equals(resp.get("return_code")) &&
                         WXPayConstants.SUCCESS.equals(resp.get("result_code"))) {
+
                     OrderQueryResp orderQueryResp = new OrderQueryResp() {
                         @Override
                         public String tradeNo() {

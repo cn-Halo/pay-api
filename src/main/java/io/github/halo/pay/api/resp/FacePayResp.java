@@ -33,4 +33,12 @@ public interface FacePayResp extends PayResp {
      * @return
      */
     String gmtPayment();
+
+
+    /**
+     * 交易状态
+     *
+     * @return
+     */
+    String tradeStatus();
 }
