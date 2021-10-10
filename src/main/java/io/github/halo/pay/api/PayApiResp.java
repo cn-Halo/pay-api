@@ -42,4 +42,18 @@ public interface PayApiResp<T> {
         return SUCCESS_CODE.equals(this.code()) && SUCCESS_CODE.equals(this.subCode());
     }
 
+    default String printMsg() {
+        String msg = "";
+        if (msg() != null && msg().trim().length() != 0) {
+            msg = msg();
+        }
+        if (subMsg() != null && subMsg().trim().length() != 0) {
+            if (msg.length() != 0) {
+                msg = msg + "：";
+            }
+            msg = msg + subMsg();
+        }
+        return msg;
+    }
+
 }

@@ -1,108 +1,27 @@
-# 实现了微信、支付宝支付能力接口，并统一了下单，查询等接口
+package io.github.halo.pay;
 
-## TODO
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.github.wxpay.sdk.WXPay;
+import com.github.wxpay.sdk.WXPayConfig;
+import io.github.halo.pay.api.PayApiResp;
+import io.github.halo.pay.api.constant.WXTradeTypeEnum;
+import io.github.halo.pay.api.resp.OrderQueryResp;
+import io.github.halo.pay.service.PayApiService;
+import io.github.halo.pay.service.constant.PayTypeEnum;
+import io.github.halo.pay.service.param.UniteOrderQueryParam;
+import io.github.halo.pay.service.param.UnitePayParam;
 
-- 微信金额转换。(完成)
-- 微信订单转换。(完成)
-- payApi接口返回的tradeStatus是支付渠道原生的内容,一：通过payApiService来实现订单状态的统一。二：直接在payApi接口中统一转换。(完成)
-- PayApiService更上层的一种抽象。(完成)
+import java.io.InputStream;
 
-## 架构图
+/**
+ * @author yzm
+ * @date 2021/10/10 10:38
+ */
+public class Test {
 
-![架构图](./pay-api架构图.png)
 
-## 支付状态机
-
-![支付状态机](./支付状态机.png)
-
-## 用法一
-
-### 统一支付接口
-
-```
-    public void pay() throws Exception {
-        String serverUrl = "https://openapi.alipay.com/gateway.do";
-        String aliAppId = "";
-        String aliAppPrivateKey = "";
-        String format = "json";
-        String charset = "UTF-8";
-        String alipayPublicKey = "";
-        String aliSignType = "RSA2";
-
-        AlipayClient alipayClient = new DefaultAlipayClient(serverUrl, aliAppId,
-                aliAppPrivateKey,
-                format, charset, alipayPublicKey, aliSignType);
-
-        PayApi payApi = new AliPayApiImpl(alipayClient);
-
-        payApi.facePay(new FacePayParam<AlipayResponse>() {
-            @Override
-            public String outTradeNo() {
-                return "123";
-            }
-
-            @Override
-            public String totalAmount() {
-                return "0.01";
-            }
-
-            @Override
-            public String subject() {
-                return "测试";
-            }
-
-            @Override
-            public String scene() {
-                return "bar_code";
-            }
-
-            @Override
-            public String authCode() {
-                return "284832742165939547";
-            }
-        });
-
-    }
-```
-
-### 查询接口
-
-```
-    public void query() throws Exception {
-        String serverUrl = "https://openapi.alipay.com/gateway.do";
-        String aliAppId = "";
-        String aliAppPrivateKey = "";
-        String format = "json";
-        String charset = "UTF-8";
-        String alipayPublicKey = "";
-        String aliSignType = "RSA2";
-
-        AlipayClient alipayClient = new DefaultAlipayClient(serverUrl, aliAppId,
-                aliAppPrivateKey,
-                format, charset, alipayPublicKey, aliSignType);
-
-        PayApi payApi = new AliPayApiImpl(alipayClient);
-
-        PayApiResp<OrderQueryResp> payApiResp = (PayApiResp) payApi.query(new OrderQueryParam<Object>() {
-            @Override
-            public String tradeNo() {
-                return null;
-            }
-
-            @Override
-            public String outTradeNo() {
-                return "123";
-            }
-        });
-        System.out.println(payApiResp);
-    }
-
-```
-
-## 用法二（更抽象、集成度更高统一接口）
-### 初始化
-```
-  public WXPay createWXClient() {
+    public WXPay createWXClient() {
         WXPayConfig wxPayConfig = new WXPayConfig() {
             @Override
             public String getAppID() {
@@ -137,8 +56,8 @@
         WXPay wxpay = new WXPay(wxPayConfig);
         return wxpay;
     }
-    
- public AlipayClient createAlipayClient() {
+
+    public AlipayClient createAlipayClient() {
         String serverUrl = "https://openapi.alipay.com/gateway.do";
         String aliAppId = "";
         String aliAppPrivateKey = "";
@@ -153,9 +72,7 @@
         return alipayClient;
     }
 
-```
-### 统一支付接口
-```
+
     public void pay() throws Exception {
         WXPay wxPayClient = createWXClient();
         AlipayClient alipayClient = createAlipayClient();
@@ -221,11 +138,7 @@
 
     }
 
-```
-
-### 统一查询接口
-```
-  public void query() throws Exception {
+    public void query() throws Exception {
         WXPay wxPayClient = createWXClient();
         AlipayClient alipayClient = createAlipayClient();
         PayApiService payApiService = new PayApiService(alipayClient, wxPayClient);
@@ -254,8 +167,4 @@
         }
 
     }
-```
-
-
-
-
+}
