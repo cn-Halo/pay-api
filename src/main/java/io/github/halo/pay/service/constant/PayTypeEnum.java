@@ -6,17 +6,27 @@ package io.github.halo.pay.service.constant;
  */
 public enum PayTypeEnum {
 
-    WX,
-    ALI,
+    WX("微信"),
+    ALI("支付宝"),
 
-    WX_WAP_PAY,
-    ALI_WAP_PAY,
+    WX_WAP_PAY("微信WAP支付"),
+    ALI_WAP_PAY("支付宝WAP支付"),
 
-    WX_APP_PAY,
-    ALI_APP_PAY,
+    WX_APP_PAY("微信APP支付"),
+    ALI_APP_PAY("支付宝APP支付"),
 
-    WX_FACE_PAY,
-    ALI_FACE_PAY;
+    WX_FACE_PAY("微信当面付"),
+    ALI_FACE_PAY("支付宝当面付");
+
+    private String msg;
+
+    PayTypeEnum(String msg) {
+        this.msg = msg;
+    }
+
+    public String msg() {
+        return this.msg;
+    }
 
     public boolean isWX() {
         if (this.name().indexOf("WX") != -1)

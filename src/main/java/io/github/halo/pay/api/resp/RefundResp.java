@@ -5,7 +5,7 @@ package io.github.halo.pay.api.resp;
  *
  * @author yzm
  */
-public interface RefundResp extends PayResp  {
+public interface RefundResp extends PayResp {
 
     String refundNo();
 
