@@ -6,6 +6,8 @@
 - 微信订单转换。(完成)
 - payApi接口返回的tradeStatus是支付渠道原生的内容,一：通过payApiService来实现订单状态的统一。二：直接在payApi接口中统一转换。(完成)
 - PayApiService更上层的一种抽象。(完成)
+- 所有入餐增加一个Object对象（做通用适配）
+- 相应中携带原始入参
 
 ## 架构图
 
